@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.446268037835221,
+        "y": 5.695053213468251
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.206388076593817,
+        "y": 5.718441522353131
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.001590578679733,
+        "y": 4.2
+      },
+      "prevControl": {
+        "x": 5.966508115352413,
+        "y": 5.472864279061892
+      },
+      "nextControl": {
+        "x": 6.032743089170832,
+        "y": 3.069722532387245
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.446268037835221,
+        "y": 2.7
+      },
+      "prevControl": {
+        "x": 5.426224233668975,
+        "y": 2.7905276701130544
+      },
+      "nextControl": {
+        "x": 3.194993512494147,
+        "y": 2.5844081317792273
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8909454969907094,
+        "y": 4.2
+      },
+      "prevControl": {
+        "x": 2.9146426922960154,
+        "y": 3.5218952735501348
+      },
+      "nextControl": {
+        "x": 2.855863033663389,
+        "y": 5.203898726885772
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.446268037835221,
+        "y": 5.695053213468251
+      },
+      "prevControl": {
+        "x": 3.6042889179795448,
+        "y": 5.74182983123801
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
