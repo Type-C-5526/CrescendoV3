@@ -12,7 +12,7 @@ public class Constants {
     }
 
     public static final class Shooter {
-        public static final int talonFXShooterID = 31;
+        public static final int talonFXShooterID = 34;
         public static final int talonFXIDCL = 31;
         public static final int talonFXICR = 32; //TODO Change ID 
         public static final String canbus = "rio";
