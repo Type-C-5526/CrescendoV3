@@ -18,7 +18,7 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Shooter.getInstance().setSetpoint(90);
+    Shooter.getInstance().setSetpoint(-100);
     Shooter.getInstance().enableMotorPID();
 
   }
