@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.LimelightHelpers;
 
 public class Robot extends TimedRobot {
@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
 
     if (UseVision) {    
 
-      var visionEstimatedRobotPoses = Vision.getInstance().getEstimatedGlobalPoses();
+      var visionEstimatedRobotPoses = VisionSubsystem.getInstance().getEstimatedGlobalPoses();
 
       // Add measurment if results exist
       if (!visionEstimatedRobotPoses.isEmpty()){
