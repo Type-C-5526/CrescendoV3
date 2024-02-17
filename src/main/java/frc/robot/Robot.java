@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Vision;
 import frc.robot.util.LimelightHelpers;
 
 public class Robot extends TimedRobot {
@@ -16,7 +17,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private final boolean UseLimelight = false;
+  private final boolean UseVision = false;
 
   @Override
   public void robotInit() {
@@ -27,7 +28,21 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
-    if (UseLimelight) {    
+
+    if (UseVision) {    
+
+      var visionEstimatedRobotPoses = Vision.getInstance().getEstimatedGlobalPoses();
+
+      // Add measurment if results exist
+      if (!visionEstimatedRobotPoses.isEmpty()){
+        // Add vision measurements to pose estimator
+        for (var visionEstimatedRobotPose : visionEstimatedRobotPoses) {
+          // if (visionEstimatedRobotPose.estimatedPose.toPose2d().getTranslation().getDistance(m_previousPose.getTranslation()) > 1.0) continue;
+          m_robotContainer.drivetrain.addVisionMeasurement(visionEstimatedRobotPose.estimatedPose.toPose2d(), visionEstimatedRobotPose.timestampSeconds);
+        }
+      };
+
+      /* 
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
       Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
@@ -35,6 +50,7 @@ public class Robot extends TimedRobot {
       if (lastResult.valid) {
         m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
+      */
     }
   }
 

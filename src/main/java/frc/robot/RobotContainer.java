@@ -16,8 +16,11 @@ import frc.robot.commands.Turn90Left;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
+
+  
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -37,6 +40,8 @@ public class RobotContainer {
 
   /* Path follower */
   private Command runAuto = drivetrain.getAutoPath("Auto1");
+
+  private Vision m_Vision = Vision.getInstance();
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -70,6 +75,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+
+    m_Vision.setPoseSupplier(() -> drivetrain.getState().Pose);
   }
 
   public Command getAutonomousCommand() {
