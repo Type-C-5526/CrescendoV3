@@ -10,13 +10,18 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.HomeTurret;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.Turn90Left;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Turret;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+
+  private Turret m_Turret = Turret.getInstance();
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController m_driverControl = new CommandXboxController(Constants.IO.driverPort); // My joystick
@@ -58,7 +63,9 @@ public class RobotContainer {
     m_driverControl.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
     m_driverControl.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
-    m_driverControl.b().whileTrue(new Shoot());
+    //m_driverControl.b().whileTrue(new Shoot());
+    m_driverControl.b().whileTrue(new HomeTurret());
+    m_driverControl.a().whileTrue(new Turn90Left());
   }
 
   public RobotContainer() {

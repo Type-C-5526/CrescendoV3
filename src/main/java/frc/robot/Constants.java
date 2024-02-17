@@ -11,6 +11,20 @@ public class Constants {
         public static final int driverPort = 0;
     }
 
+    public static final class Turret {
+        public static final int MotorID = 6;
+        public static final int MotorFollowerID = 7;
+
+        public static final int MagneticSwitch1 = 0; 
+        public static final int MagneticSwitch2 = 1; 
+
+
+        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.145,0,0,1);
+
+
+    }
+
+
     public static final class Shooter {
         public static final int talonFXShooterID = 34;
         public static final int talonFXIDCL = 31;
