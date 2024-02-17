@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Shooter extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
   
-  private static Shooter m_instance;
+  private static ShooterSubsystem m_instance;
   private TalonFX m_motor1;
   private TalonFXConfiguration m_motor1Config;
   private VelocityVoltage m_VelocityVoltage;
@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
   private NeutralOut m_break;
   
   /** Creates a new Shooter. */
-  public Shooter() {
+  public ShooterSubsystem() {
     m_setpoint = 0;
     m_enabled = false;
     m_break = new NeutralOut();
@@ -83,9 +83,9 @@ public class Shooter extends SubsystemBase {
     return Constants.Shooter.pidConstants.atSetpoint(m_motor1.getVelocity().getValueAsDouble(), m_setpoint);
   }
 
-  public static Shooter getInstance(){
+  public static ShooterSubsystem getInstance(){
     if(m_instance == null){
-      m_instance = new Shooter();
+      m_instance = new ShooterSubsystem();
     }
     return m_instance;
   }

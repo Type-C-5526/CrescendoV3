@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Turret extends SubsystemBase {
+public class TurretSubsystem extends SubsystemBase {
   /** Creates a new Turret. */
-  private static Turret m_instance;
+  private static TurretSubsystem m_instance;
 
   private CANSparkMax m_motor1;
   private CANSparkMax m_followerMotor2;
@@ -31,7 +31,7 @@ public class Turret extends SubsystemBase {
   private boolean m_enabled;
 
 
-  public Turret() {
+  public TurretSubsystem() {
 
     m_enabled = false;
 
@@ -100,9 +100,9 @@ public class Turret extends SubsystemBase {
   }
 
 
-  public static Turret getInstance(){
+  public static TurretSubsystem getInstance(){
     if(m_instance == null){
-      m_instance = new Turret();
+      m_instance = new TurretSubsystem();
     }
     return m_instance;
   }

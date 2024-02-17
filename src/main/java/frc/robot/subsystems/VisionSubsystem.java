@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.AprilTagCamera;
 
-public class Vision extends SubsystemBase implements AutoCloseable{
+public class VisionSubsystem extends SubsystemBase implements AutoCloseable{
 
     private AprilTagCamera[] m_apriltagCameras;
 
@@ -32,9 +32,9 @@ public class Vision extends SubsystemBase implements AutoCloseable{
     private Supplier<Pose2d> m_poseSupplier;
     private VisionSystemSim m_sim;
 
-    private static Vision m_instance;
+    private static VisionSubsystem m_instance;
 
-    public Vision(){
+    public VisionSubsystem(){
 
         this.m_apriltagCameras = new AprilTagCamera[Constants.Vision.NUMBER_OF_CAMERAS];
         
@@ -145,9 +145,9 @@ public class Vision extends SubsystemBase implements AutoCloseable{
         // This method will be called once per scheduler run
     }
 
-    public static Vision getInstance(){
+    public static VisionSubsystem getInstance(){
         if(m_instance == null){
-            m_instance = new Vision();
+            m_instance = new VisionSubsystem();
         }
         return m_instance;
     }
