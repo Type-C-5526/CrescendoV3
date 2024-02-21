@@ -63,6 +63,16 @@ public class Constants {
     }
 
 
+     public static final class Conveyor {
+        public static final int MotorID = 6;
+    
+        public static final PIDUtil ConveyorPIDConstants = new PIDUtil(0.145,0,0,1);
+
+
+    }
+
+
+
     public static final class Shooter {
         public static final int talonFXShooterID = 34;
         public static final int talonFXIDCL = 31;
