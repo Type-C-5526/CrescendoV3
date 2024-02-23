@@ -24,6 +24,14 @@ public class Constants {
 
     }
 
+    public static final class ShooterPivot {
+        public static final int MOTOR_ID = 18;
+        public static final String MOTOR_CANBUS = "rio";
+
+        public static final int CANCODER_ID = 19;
+        public static final String CANCODER_CANBUS = "rio";
+    }
+
     public static final class Vision {
 
         /** Robot loop frequency */
