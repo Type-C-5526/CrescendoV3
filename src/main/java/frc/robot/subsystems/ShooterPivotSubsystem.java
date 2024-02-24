@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +28,10 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
   private TalonFX m_motor;
   private CANcoder m_encoder;
+
+  private boolean m_pidEnabled = false;
+  private double m_setpoint = 0;
+
 
   /* Start at position 0, enable FOC, no feed forward, use slot 0 */
   private final PositionVoltage m_voltagePosition = new PositionVoltage(
@@ -42,50 +47,34 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   /* Keep a brake request so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
 
-  private final StatusSignal<Boolean> f_fusedSensorOutOfSync;
-  private final StatusSignal<Boolean> sf_fusedSensorOutOfSync;
-  private final StatusSignal<Boolean> f_remoteSensorOutOfSync;
-  private final StatusSignal<Boolean> sf_remoteSensorOutOfSync;
-
-  private final StatusSignal<Double> fx_pos;
-  private final StatusSignal<Double> fx_vel;
-  private final StatusSignal<Double> cc_pos;
-  private final StatusSignal<Double> cc_vel;
-  private final StatusSignal<Double> fx_rotorPos;
-
 
   /** Creates a new ShooterPivotSubsystem. */
   public ShooterPivotSubsystem() {
     m_motor = new TalonFX(ShooterPivot.MOTOR_ID, ShooterPivot.MOTOR_CANBUS);
     m_encoder = new CANcoder(ShooterPivot.CANCODER_ID, ShooterPivot.CANCODER_CANBUS);
 
-    f_fusedSensorOutOfSync = m_motor.getFault_FusedSensorOutOfSync();
-    sf_fusedSensorOutOfSync = m_motor.getStickyFault_FusedSensorOutOfSync();
-    f_remoteSensorOutOfSync = m_motor.getFault_RemoteSensorDataInvalid();
-    sf_remoteSensorOutOfSync = m_motor.getStickyFault_RemoteSensorDataInvalid();
-
-    fx_pos = m_motor.getPosition();
-    fx_vel = m_motor.getVelocity();
-    cc_pos = m_encoder.getPosition();
-    cc_vel  = m_encoder.getVelocity();
-    fx_rotorPos = m_motor.getRotorPosition();
 
     CANcoderConfiguration m_CANcoderConfiguration = new CANcoderConfiguration();
     
     m_CANcoderConfiguration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-    //m_CANcoderConfiguration.MagnetSensor.MagnetOffset = 0.4;
-    //m_CANcoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    m_CANcoderConfiguration.MagnetSensor.MagnetOffset = -0.766846;
+    m_CANcoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    
     m_encoder.getConfigurator().apply(m_CANcoderConfiguration);
+
+    //m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble() - 0.382080);
 
     TalonFXConfiguration m_FxConfiguration = new TalonFXConfiguration();
     m_FxConfiguration.Feedback.FeedbackRemoteSensorID = m_encoder.getDeviceID();
     m_FxConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-    m_FxConfiguration.Slot0.kP = 2.4; // An error of 0.5 rotations results in 1.2 volts output
-    m_FxConfiguration.Slot0.kD = 0.0; // 0.1  A change of 1 rotation per second results in 0.1 volts output
+    m_FxConfiguration.Slot0.kP = ShooterPivot.PIVOT_PID_UTIL.getP(); // An error of 0.5 rotations results in 1.2 volts output
+    m_FxConfiguration.Slot0.kD = ShooterPivot.PIVOT_PID_UTIL.getD(); // 0.1  A change of 1 rotation per second results in 0.1 volts output
     // Peak output of 8 volts
-    m_FxConfiguration.Voltage.PeakForwardVoltage = 8;
-    m_FxConfiguration.Voltage.PeakReverseVoltage = -8;
+    m_FxConfiguration.Voltage.PeakForwardVoltage = 12;
+    m_FxConfiguration.Voltage.PeakReverseVoltage = -12;
+
+    m_FxConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     /* Retry config apply up to 5 times, report if failure */
     StatusCode status = StatusCode.StatusCodeNotInitialized;
@@ -109,10 +98,34 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Cancoder Position", encoderPosition);
     SmartDashboard.putNumber("Pivot Talon Position", motorPosition);
 
-    SmartDashboard.putNumber("Pivot Degrees", PhoenixUnits.getRotationsToDegrees(encoderPosition));
-    SmartDashboard.putNumber("Pivot Radians", PhoenixUnits.getRotationsToRadians(encoderPosition));
-    SmartDashboard.putNumber("Check Degrees to Rotations", PhoenixUnits.getDegreesToRotations(PhoenixUnits.getRotationsToDegrees(encoderPosition)));
+    SmartDashboard.putBoolean("Pivot Enabled", m_pidEnabled);
+    SmartDashboard.putBoolean("Pivot At Setpoint", atSetpoint());
 
+    if (m_pidEnabled) {
+      m_motor.setControl(m_voltagePosition.withPosition(PhoenixUnits.getDegreesToRotations(m_setpoint)));
+    }else{
+      m_motor.setControl(m_brake);
+    }
+  }
+
+  public void enablePID(){
+    m_pidEnabled = true;
+  }
+
+  public void disablePID(){
+    m_pidEnabled = false;
+  }
+
+  public void setSetpointInDegrees(double _setpoint){
+    m_setpoint = PhoenixUnits.getDegreesToRotations(_setpoint);
+  }
+
+  public boolean atSetpoint(){
+    return ShooterPivot.PIVOT_PID_UTIL.atSetpoint(m_encoder.getPosition().getValueAsDouble(), m_setpoint);
+  }
+
+  public void resetPositionToAbsolute(){
+    m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble());
   }
 
   public static ShooterPivotSubsystem getInstance(){

@@ -43,10 +43,10 @@ public class ConveyorBelt extends SubsystemBase {
     // This method will be called once per scheduler run
     
     if(m_enabled){
-    m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
+    //m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
     }
     else {
-      m_motor1.stopMotor();
+      //m_motor1.stopMotor();
     }
 
 
@@ -67,7 +67,7 @@ public class ConveyorBelt extends SubsystemBase {
 
 
   public void setMotorVelocity(double _velocity){
-  m_motor1.set(_velocity);
+    m_motor1.set(_velocity);
   }
 
   public static ConveyorBelt getInstance(){

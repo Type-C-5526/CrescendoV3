@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.util.AprilTagCamera.Resolution;
+import frc.robot.math.PhoenixUnits;
 import frc.robot.util.PIDUtil;
 
 public class Constants {
@@ -30,6 +31,8 @@ public class Constants {
 
         public static final int CANCODER_ID = 19;
         public static final String CANCODER_CANBUS = "rio";
+
+        public static final PIDUtil PIVOT_PID_UTIL = new PIDUtil(100,0,0,PhoenixUnits.getDegreesToRotations(2));
     }
 
     public static final class Vision {
