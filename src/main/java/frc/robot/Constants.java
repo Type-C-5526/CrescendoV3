@@ -33,6 +33,10 @@ public class Constants {
         public static final String CANCODER_CANBUS = "rio";
 
         public static final PIDUtil PIVOT_PID_UTIL = new PIDUtil(100,0,0,PhoenixUnits.getDegreesToRotations(2));
+
+        //public static final double MAGNET_OFFSET = -0.382080;
+        //public static final double MAGNET_OFFSET = -0.762207;
+        public static final double MAGNET_OFFSET = -0.986084;
     }
 
     public static final class Vision {
@@ -75,7 +79,7 @@ public class Constants {
 
 
      public static final class Conveyor {
-        public static final int MotorID = 6;
+        public static final int MotorID = 14;
     
         public static final PIDUtil ConveyorPIDConstants = new PIDUtil(0.145,0,0,1);
 

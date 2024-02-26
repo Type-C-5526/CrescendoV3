@@ -54,16 +54,20 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     m_encoder = new CANcoder(ShooterPivot.CANCODER_ID, ShooterPivot.CANCODER_CANBUS);
 
 
+    
     CANcoderConfiguration m_CANcoderConfiguration = new CANcoderConfiguration();
     
+    //m_encoder.getConfigurator().apply(m_CANcoderConfiguration);
+    
     m_CANcoderConfiguration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-    m_CANcoderConfiguration.MagnetSensor.MagnetOffset = -0.766846;
+    m_CANcoderConfiguration.MagnetSensor.MagnetOffset = ShooterPivot.MAGNET_OFFSET;
     m_CANcoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     
     m_encoder.getConfigurator().apply(m_CANcoderConfiguration);
+    //m_encoder.getConfigurator().refresh(m_CANcoderConfiguration);  
 
-    //m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble() - 0.382080);
-
+    m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble() + ShooterPivot.MAGNET_OFFSET);
+   
     TalonFXConfiguration m_FxConfiguration = new TalonFXConfiguration();
     m_FxConfiguration.Feedback.FeedbackRemoteSensorID = m_encoder.getDeviceID();
     m_FxConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -97,12 +101,13 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Pivot Cancoder Position", encoderPosition);
     SmartDashboard.putNumber("Pivot Talon Position", motorPosition);
+    SmartDashboard.putNumber("Pivot Degrees", PhoenixUnits.getRotationsToDegrees(motorPosition));
 
     SmartDashboard.putBoolean("Pivot Enabled", m_pidEnabled);
     SmartDashboard.putBoolean("Pivot At Setpoint", atSetpoint());
 
     if (m_pidEnabled) {
-      m_motor.setControl(m_voltagePosition.withPosition(PhoenixUnits.getDegreesToRotations(m_setpoint)));
+      m_motor.setControl(m_voltagePosition.withPosition(m_setpoint));
     }else{
       m_motor.setControl(m_brake);
     }
