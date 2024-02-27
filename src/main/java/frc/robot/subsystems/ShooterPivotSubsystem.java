@@ -60,13 +60,13 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     //m_encoder.getConfigurator().apply(m_CANcoderConfiguration);
     
     m_CANcoderConfiguration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-    m_CANcoderConfiguration.MagnetSensor.MagnetOffset = ShooterPivot.MAGNET_OFFSET;
+    m_CANcoderConfiguration.MagnetSensor.MagnetOffset =  -0.777832;//-0.229492;
     m_CANcoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     
     m_encoder.getConfigurator().apply(m_CANcoderConfiguration);
     //m_encoder.getConfigurator().refresh(m_CANcoderConfiguration);  
 
-    m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble() + ShooterPivot.MAGNET_OFFSET);
+    //m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble());
    
     TalonFXConfiguration m_FxConfiguration = new TalonFXConfiguration();
     m_FxConfiguration.Feedback.FeedbackRemoteSensorID = m_encoder.getDeviceID();
