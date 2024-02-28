@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
+import frc.robot.subsystems.ShooterPivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.util.PoseHelper;
 
@@ -19,6 +20,7 @@ public class AutoAim extends Command {
 
   private Supplier<Pose2d> m_poseSupplier;
   private boolean isBlue;
+  private ShooterPivotSubsystem m_Pivot;
 
   private double m_quadrant;
   private double m_realtiveQuadrant;
@@ -33,7 +35,12 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+    m_Pivot = ShooterPivotSubsystem.getInstance();
+    m_Pivot.setSetpointInDegrees(30);
+    m_Pivot.enablePID();
+
+    TurretSubsystem.getInstance().setSetpoint(0);
+    TurretSubsystem.getInstance().enableTurretPID();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +54,7 @@ public class AutoAim extends Command {
           isBlue = false;
         }
     });
-    
+
     Pose2d pose = m_poseSupplier.get();
     
     PoseHelper helper = new PoseHelper( 
@@ -78,9 +85,20 @@ public class AutoAim extends Command {
     }
 
     double turretSetpoint = (angle + m_realtiveQuadrant - (heading - m_quadrant)) - 90;
+
+    if(turretSetpoint > 90 || turretSetpoint < -90){
+      turretSetpoint = 0;
+    }
+
+
     SmartDashboard.putNumber("Turret Setpoint: ", turretSetpoint);
     SmartDashboard.putBoolean("Is Blue:", isBlue);
 
+    if(m_Pivot.getMeasurment() < 0){
+      turretSetpoint = 0;
+    }
+
+    TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
     
     
   }

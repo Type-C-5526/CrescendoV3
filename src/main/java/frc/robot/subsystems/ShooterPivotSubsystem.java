@@ -8,6 +8,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -17,6 +18,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPivot;
@@ -25,6 +28,9 @@ import frc.robot.math.PhoenixUnits;
 public class ShooterPivotSubsystem extends SubsystemBase {
 
   private static ShooterPivotSubsystem m_instance;
+
+  private PIDController m_PID;
+  private DutyCycleOut m_dutyCycle = new DutyCycleOut(0);
 
   private TalonFX m_motor;
   private CANcoder m_encoder;
@@ -50,6 +56,11 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
   /** Creates a new ShooterPivotSubsystem. */
   public ShooterPivotSubsystem() {
+
+    m_PID = new PIDController(10, 0, 0);
+    m_PID.setTolerance(2);
+    
+
     m_motor = new TalonFX(ShooterPivot.MOTOR_ID, ShooterPivot.MOTOR_CANBUS);
     m_encoder = new CANcoder(ShooterPivot.CANCODER_ID, ShooterPivot.CANCODER_CANBUS);
 
@@ -99,15 +110,18 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     var encoderPosition = m_encoder.getPosition().getValueAsDouble();
     var motorPosition = m_motor.getPosition().getValueAsDouble();
 
+
+    SmartDashboard.putNumber("Pivot Absolut Position", m_encoder.getAbsolutePosition().getValueAsDouble());
     SmartDashboard.putNumber("Pivot Cancoder Position", encoderPosition);
     SmartDashboard.putNumber("Pivot Talon Position", motorPosition);
-    SmartDashboard.putNumber("Pivot Degrees", PhoenixUnits.getRotationsToDegrees(motorPosition));
+    SmartDashboard.putNumber("Pivot Degrees", PhoenixUnits.getRotationsToDegrees(getMeasurment()));
 
     SmartDashboard.putBoolean("Pivot Enabled", m_pidEnabled);
     SmartDashboard.putBoolean("Pivot At Setpoint", atSetpoint());
 
     if (m_pidEnabled) {
-      m_motor.setControl(m_voltagePosition.withPosition(m_setpoint));
+      m_motor.setControl(m_dutyCycle.withOutput(m_PID.calculate(getMeasurment())));
+      //m_motor.setControl(m_voltagePosition.withPosition(m_setpoint));
     }else{
       m_motor.setControl(m_brake);
     }
@@ -123,14 +137,20 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
   public void setSetpointInDegrees(double _setpoint){
     m_setpoint = PhoenixUnits.getDegreesToRotations(_setpoint);
+    m_PID.setSetpoint(PhoenixUnits.getDegreesToRotations(_setpoint));
   }
 
   public boolean atSetpoint(){
-    return ShooterPivot.PIVOT_PID_UTIL.atSetpoint(m_encoder.getPosition().getValueAsDouble(), m_setpoint);
+    //return ShooterPivot.PIVOT_PID_UTIL.atSetpoint(m_encoder.getPosition().getValueAsDouble(), m_setpoint);
+    return m_PID.atSetpoint();
   }
 
   public void resetPositionToAbsolute(){
     m_encoder.setPosition(m_encoder.getAbsolutePosition().getValueAsDouble());
+  }
+
+  public double getMeasurment(){
+    return m_encoder.getAbsolutePosition().getValueAsDouble() -0.67;
   }
 
   public static ShooterPivotSubsystem getInstance(){
