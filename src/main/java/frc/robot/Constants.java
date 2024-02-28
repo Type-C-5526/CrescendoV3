@@ -20,9 +20,9 @@ public class Constants {
         public static final double FIELD_LENGTH = 16.54;
 
         public static final Translation2d CENTER = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2);
-        public static final Pair<Integer,Translation2d> BLUE_SPEAKER = new Pair<Integer,Translation2d>(7, new Translation2d(0.00, 5.55));
-        public static final Pair<Integer,Translation2d> RED_SPEAKER = new Pair<Integer,Translation2d>(4, new Translation2d(15.64, 5.55));
 
+        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.53);
+        public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.53);
     }
 
     public static final class ShooterPivot {
