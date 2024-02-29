@@ -34,6 +34,6 @@ public class PoseHelper {
         
         return Math.toDegrees(
             Math.asin((m_pose2.getY()-m_pose1.getY())/DistanceBetweenPoses())
-        ) + 90;
+        );
     }
 }

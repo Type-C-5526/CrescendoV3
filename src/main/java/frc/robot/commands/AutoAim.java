@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
+import frc.robot.math.Vector;
 import frc.robot.subsystems.ShooterPivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.util.PoseHelper;
@@ -51,7 +52,7 @@ public class AutoAim extends Command {
         if (allianceColor == Alliance.Blue) {
           isBlue = true;
         }else if (allianceColor == Alliance.Red) {
-          isBlue = false;
+          isBlue = true; //TODO CHANGE isBlue to False
         }
     });
 
@@ -67,38 +68,73 @@ public class AutoAim extends Command {
       heading += 360;
     }
 
-    if(heading >= 0 && heading < 90){
-      m_quadrant = 0;
-      m_realtiveQuadrant = 180;
+
+
+    SmartDashboard.putNumber("Angle Antes de Arreglo", angle);
+
+    //C1
+    if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() <= 0){
+
+      angle = Math.abs(angle);
     }
-    else if(heading >= 90 && heading < 180 ){
-      m_quadrant = 90;
-      m_realtiveQuadrant = 90;
+    //C2
+    else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() <= 0){
+
+      angle = (90 - Math.abs(angle)) + 90;
     }
-    else if(heading >= 180 && heading < 270 ){
-      m_quadrant = 180;
-      m_realtiveQuadrant = 0;
+    //C3
+    else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() >= 0){
+      angle = Math.abs(angle) + 180;
+
     }
-    else if(heading >= 270 && heading < 360 ){
-      m_quadrant = 270;
-      m_realtiveQuadrant = 270;
+    //C4
+    else if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() >= 0){
+
+      angle = (90 - Math.abs(angle)) + 270;
     }
 
-    double turretSetpoint = (angle + m_realtiveQuadrant - (heading - m_quadrant)) - 90;
+    Vector vectorA = new Vector(1, heading, isBlue); //Is blue does nothing
+    Vector vectorB = new Vector(distance, angle, isBlue);
+    double angleBetweenVectors = Vector.getAngleBetweenVectors(vectorA, vectorB);
+
+    double turretSetpoint = 0;
+
+    int angleBetweenVectorsInt = (int) angleBetweenVectors;
+    int vectorAAngle = ( int ) vectorA.getAngle();
+    int vectorBAngle = ( int ) vectorB.getAngle();
+
+    
+    SmartDashboard.putNumber("Angle Between Vectors", angleBetweenVectors);
+    SmartDashboard.putNumber("Heading", heading);
+    SmartDashboard.putNumber("Angle Despues de Arreglo", angle);
+    SmartDashboard.putNumber("Magnitud Speaker", distance);
+    SmartDashboard.putNumber("Diff X", helper.DiffXBetweenPoses());
+    SmartDashboard.putNumber("Diff Y", helper.DiffYBetweenPoses());
+
+    SmartDashboard.putNumber("vector A Angle", vectorAAngle);
+    SmartDashboard.putNumber("vector B Angle", vectorBAngle);
+
+    
+
+    if((vectorAAngle + angleBetweenVectorsInt) == vectorBAngle){
+      turretSetpoint = angleBetweenVectors;
+    }
+    else {
+      turretSetpoint = angleBetweenVectors * -1;
+    }
 
     if(turretSetpoint > 90 || turretSetpoint < -90){
       turretSetpoint = 0;
     }
 
-
-    SmartDashboard.putNumber("Turret Setpoint: ", turretSetpoint);
+    SmartDashboard.putNumber("Turret Supposed Setpoint: ", turretSetpoint);
     SmartDashboard.putBoolean("Is Blue:", isBlue);
 
     if(m_Pivot.getMeasurment() < 0){
       turretSetpoint = 0;
     }
 
-    TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
+    //TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
     
     
   }

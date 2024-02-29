@@ -150,7 +150,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   }
 
   public double getMeasurment(){
-    return m_encoder.getAbsolutePosition().getValueAsDouble() -0.67;
+    return m_encoder.getAbsolutePosition().getValueAsDouble() -0.37;
   }
 
   public static ShooterPivotSubsystem getInstance(){

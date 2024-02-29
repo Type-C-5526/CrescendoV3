@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,6 +46,11 @@ public class TurretSubsystem extends SubsystemBase {
     m_motor1.restoreFactoryDefaults();
     m_followerMotor2.restoreFactoryDefaults();
 
+    m_motor1.setSmartCurrentLimit(30);
+    m_followerMotor2.setSmartCurrentLimit(30);
+    m_motor1.setIdleMode(IdleMode.kBrake);
+  
+
     m_pidController = m_motor1.getPIDController();
 
     m_encoder = m_motor1.getEncoder();
@@ -55,7 +62,7 @@ public class TurretSubsystem extends SubsystemBase {
     m_pidController.setOutputRange(-1, 1);
 
     m_followerMotor2.follow(m_motor1);
-
+    
     
   }
 
