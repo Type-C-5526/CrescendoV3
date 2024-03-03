@@ -2,14 +2,13 @@ package frc.robot;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.robot.util.AprilTagCamera.Resolution;
 import frc.robot.math.PhoenixUnits;
+import frc.robot.util.AprilTagCamera.Resolution;
 import frc.robot.util.PIDUtil;
 
 public class Constants {
@@ -78,12 +77,29 @@ public class Constants {
     }
 
 
+    public static final class Elevator {
+
+        public static final int talonFXElevatorID = 3;
+         public static final int talonFollowerFXElevatorID = 20;
+                public static final String canbus = "rio";
+
+                public static final TalonFXConfiguration shooterMotorConfig = new TalonFXConfiguration();
+
+                public static final PIDUtil pidConstants = new PIDUtil(6, 0, 0, 10, 0.1);
+
+    }
+
+
      public static final class Conveyor {
         public static final int MotorID = 14;
     
         public static final PIDUtil ConveyorPIDConstants = new PIDUtil(0.145,0,0,1);
 
 
+    }
+    public static final class LEDs {
+        public static final int LedPort = 0;
+        public static final int LedLength = 18;
     }
 
 

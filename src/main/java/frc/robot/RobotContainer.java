@@ -16,14 +16,18 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.ConveyorIn;
+import frc.robot.commands.LeaveAmp;
 import frc.robot.commands.Shoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyorBelt;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ShooterPivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
+
+  private ElevatorSubsystem m_elevator = new ElevatorSubsystem();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -49,7 +53,7 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    TurretSubsystem.getInstance().setDefaultCommand(new AutoAim(() -> drivetrain.getState().Pose));
+    //TurretSubsystem.getInstance().setDefaultCommand(new AutoAim(() -> drivetrain.getState().Pose));
     
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
@@ -59,11 +63,14 @@ public class RobotContainer {
         ).ignoringDisable(true));
 
     joystick.leftBumper().whileTrue(drivetrain.applyRequest(() -> brake));
+    //joystick.a().whileTrue(new LeaveAmp());
+    
     //joystick.b().whileTrue(drivetrain
     //      .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
-    joystick.b().whileTrue(new Shoot());
+    joystick.rightBumper().whileTrue(new Shoot());
     joystick.y().whileTrue(new ConveyorIn());
+    joystick.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 

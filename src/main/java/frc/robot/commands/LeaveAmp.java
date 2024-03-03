@@ -5,48 +5,40 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ConveyorBelt;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ShooterPivotSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.RobotStatus;
 
-public class Shoot extends Command {
-  /** Creates a new Shoot. */
-  private ShooterSubsystem m_shooter;
-  private ConveyorBelt m_conveyor;
-  private ShooterPivotSubsystem m_pivot;
-
-  public Shoot() {
+public class LeaveAmp extends Command {
+  private ShooterPivotSubsystem m_PivotSubsystem = ShooterPivotSubsystem.getInstance();
+  private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
+  /** Creates a new HalfExtensionElevator. */
+  public LeaveAmp() {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_conveyor = ConveyorBelt.getInstance();
-    m_shooter = ShooterSubsystem.getInstance();
-    m_pivot = ShooterPivotSubsystem.getInstance();
+    addRequirements(ElevatorSubsystem.getInstance());
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_PivotSubsystem.setSetpointInDegrees(30);
+    m_PivotSubsystem.enablePID();
     
-    
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(Superstructure.getRobotStatus() == RobotStatus.AIMED){
-
-      m_conveyor.setMotorVelocity(-1);
+    if(m_PivotSubsystem.atSetpoint()){
+    m_Elevator.setSetpointAsPercent(50);
+    m_Elevator.enableMotorPID();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      m_conveyor.setMotorVelocity(0);
-      m_shooter.disableMotorPID();
+    m_Elevator.disableMotorPID();
+    m_PivotSubsystem.disablePID();
   }
 
   // Returns true when the command should end.

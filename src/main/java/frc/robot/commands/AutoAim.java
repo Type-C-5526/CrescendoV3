@@ -12,9 +12,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
+import frc.robot.Constants.Shooter;
 import frc.robot.math.Vector;
+import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.Superstructure.RobotStatus;
 import frc.robot.util.PoseHelper;
 
 public class AutoAim extends Command {
@@ -23,25 +28,42 @@ public class AutoAim extends Command {
   private boolean isBlue;
   private ShooterPivotSubsystem m_Pivot;
 
-  private double m_quadrant;
-  private double m_realtiveQuadrant;
+  private ShooterSubsystem m_shooter;
+  private TurretSubsystem m_turret;
+  
+  
+
+
+  private double tolerance = 5.00;
+
+  private boolean canAim;
   /** Creates a new AutoAim. */
   public AutoAim(Supplier<Pose2d> _poseSupplier) {
     m_poseSupplier = _poseSupplier;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(TurretSubsystem.getInstance());
 
+    m_shooter = ShooterSubsystem.getInstance();
+    m_turret = TurretSubsystem.getInstance();
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
+    Superstructure.setRobotStatus(RobotStatus.AIMING);
+
     m_Pivot = ShooterPivotSubsystem.getInstance();
-    m_Pivot.setSetpointInDegrees(30);
+    m_Pivot.setSetpointInDegrees(55);
     m_Pivot.enablePID();
 
-    TurretSubsystem.getInstance().setSetpoint(0);
-    TurretSubsystem.getInstance().enableTurretPID();
+    m_shooter.setSetpoint(-80);
+    m_shooter.enableMotorPID();
+
+    m_turret.setSetpoint(0);
+    m_turret.enableTurretPID();
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -116,7 +138,7 @@ public class AutoAim extends Command {
 
     
 
-    if((vectorAAngle + angleBetweenVectorsInt) == vectorBAngle){
+    if((Math.abs(vectorAAngle) + Math.abs(angleBetweenVectorsInt)) - Math.abs(vectorBAngle) <= tolerance){//propuesta de para tener tolerance
       turretSetpoint = angleBetweenVectors;
     }
     else {
@@ -125,6 +147,10 @@ public class AutoAim extends Command {
 
     if(turretSetpoint > 90 || turretSetpoint < -90){
       turretSetpoint = 0;
+      canAim = false;
+    }
+    else {
+      canAim = true;
     }
 
     SmartDashboard.putNumber("Turret Supposed Setpoint: ", turretSetpoint);
@@ -132,16 +158,31 @@ public class AutoAim extends Command {
 
     if(m_Pivot.getMeasurment() < 0){
       turretSetpoint = 0;
+      canAim = false;
+    }
+    else {
+      canAim= true;
     }
 
-    //TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
+    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint() && canAim){
+      Superstructure.setRobotStatus(RobotStatus.AIMED);
+    }
+    else {
+      Superstructure.setRobotStatus(RobotStatus.AIMING);
+    }
+
+
+    TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
     
+
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    new GoHome().schedule();
+  }
 
   // Returns true when the command should end.
   @Override

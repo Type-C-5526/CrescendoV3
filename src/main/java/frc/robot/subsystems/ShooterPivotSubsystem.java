@@ -58,7 +58,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   public ShooterPivotSubsystem() {
 
     m_PID = new PIDController(10, 0, 0);
-    m_PID.setTolerance(2);
+    m_PID.setTolerance(0.01);
     
 
     m_motor = new TalonFX(ShooterPivot.MOTOR_ID, ShooterPivot.MOTOR_CANBUS);
@@ -118,6 +118,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("Pivot Enabled", m_pidEnabled);
     SmartDashboard.putBoolean("Pivot At Setpoint", atSetpoint());
+    SmartDashboard.putNumber("Pivot Setpoint", m_setpoint);
 
     if (m_pidEnabled) {
       m_motor.setControl(m_dutyCycle.withOutput(m_PID.calculate(getMeasurment())));
@@ -139,6 +140,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     m_setpoint = PhoenixUnits.getDegreesToRotations(_setpoint);
     m_PID.setSetpoint(PhoenixUnits.getDegreesToRotations(_setpoint));
   }
+
 
   public boolean atSetpoint(){
     //return ShooterPivot.PIVOT_PID_UTIL.atSetpoint(m_encoder.getPosition().getValueAsDouble(), m_setpoint);
