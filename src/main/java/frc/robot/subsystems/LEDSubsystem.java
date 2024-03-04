@@ -49,7 +49,7 @@ public class LEDSubsystem extends SubsystemBase {
    
     switch (Superstructure.getRobotStatus()){
       case AIMED:
-        fire(500,5000,50);
+        
         break;
       case AIMING:
 
@@ -137,51 +137,7 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  public void fire(int flameHeight, int sparks, int delayDuration){
-    byte[] heat = new byte[m_ledsbuffer.getLength()];
-    int cooldown;
-
-    // Enfría cada celda un poco
-    for (int i = 0; i < m_ledsbuffer.getLength(); i++) {
-        cooldown = random.nextInt(((m_ledsbuffer.getLength() * 10) / m_ledsbuffer.getLength()) + 2);
-
-        if (cooldown > heat[i]) {
-            heat[i] = 0;
-        } else {
-            heat[i] -= cooldown;
-        }
-    }
-
-    // El calor de cada celda se desplaza hacia arriba y difunde ligeramente
-    for (int k = (m_ledsbuffer.getLength() - 1); k >= 2; k--) {
-        heat[k] = (byte) ((heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3);
-    }
-
-    // Enciende aleatoriamente nuevas chispas cerca de la base de la llama
-    if (random.nextInt(255) < sparks) {
-        int y = random.nextInt(7);
-        heat[y] += random.nextInt(160) + 160;
-    }
-
-    // Convierte el calor en colores LED
-    for (int j = 0; j < m_ledsbuffer.getLength(); j++) {
-        setPixelHeatColor(j, heat[j]);
-    }
-
-    // Muestra los LEDs
-    // Necesitarás adaptar esta parte para que funcione con el sistema de LED de tu robot FRC
-    // Por ejemplo, si estás usando WPILib, establecerías los LEDs así:
-    // m_ledsbuffer.setLED(i, new Color(r, g, b));
-    // m_ledsbuffer.show();
-    
-    // Retardo
-    try {
-        Thread.sleep(delayDuration);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-  }
+ 
   public void typeCMorseCode(Color color){
   
 
