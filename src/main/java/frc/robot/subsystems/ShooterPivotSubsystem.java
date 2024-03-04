@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -19,11 +22,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterPivot;
+import frc.robot.math.LinearInterpolation;
 import frc.robot.math.PhoenixUnits;
+import frc.robot.math.Point;
 
 public class ShooterPivotSubsystem extends SubsystemBase {
 
@@ -37,6 +46,10 @@ public class ShooterPivotSubsystem extends SubsystemBase {
 
   private boolean m_pidEnabled = false;
   private double m_setpoint = 0;
+
+  private List<Point> m_points;
+  private LinearInterpolation m_interpolation;
+
 
 
   /* Start at position 0, enable FOC, no feed forward, use slot 0 */
@@ -53,9 +66,13 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   /* Keep a brake request so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
 
+  
 
   /** Creates a new ShooterPivotSubsystem. */
   public ShooterPivotSubsystem() {
+    m_points = new ArrayList<>();
+    setTableValues();
+    m_interpolation = new LinearInterpolation(m_points);
 
     m_PID = new PIDController(10, 0, 0);
     m_PID.setTolerance(0.01);
@@ -101,11 +118,17 @@ public class ShooterPivotSubsystem extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
+
+
+
+    
+
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run.
+
 
     var encoderPosition = m_encoder.getPosition().getValueAsDouble();
     var motorPosition = m_motor.getPosition().getValueAsDouble();
@@ -152,8 +175,29 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   }
 
   public double getMeasurment(){
-    return m_encoder.getAbsolutePosition().getValueAsDouble() -0.37;
+    return m_encoder.getAbsolutePosition().getValueAsDouble() + Constants.ShooterPivot.MAGNET_OFFSET;
   }
+
+  public double getPivotTargetAngle(double _distance){
+    return m_interpolation.interpolate(_distance);
+  }
+
+  private void setTableValues(){
+    m_points.add(new Point(116.1,52.8));
+    m_points.add(new Point(164.1, 47.4));
+    m_points.add(new Point(194.6, 40.1));
+    m_points.add(new Point(262.1, 36.8));
+    m_points.add(new Point(267.6, 32.85));
+    m_points.add(new Point(293.1, 31.00));
+    m_points.add(new Point(329.1, 28.2));
+    m_points.add(new Point(379.6, 25.3));
+    m_points.add(new Point(460.1, 23.29));
+    m_points.add(new Point(498.1, 22.58));
+    m_points.add(new Point(554.1, 22.14));
+    m_points.add(new Point(611.1, 21.26));
+    
+    }
+
 
   public static ShooterPivotSubsystem getInstance(){
     if(m_instance == null){
@@ -161,4 +205,5 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     }
     return m_instance;
   }
+
 }

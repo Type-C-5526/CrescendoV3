@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 public class Superstructure {
-    private static RobotStatus m_robotStatus = RobotStatus.HOME;
+    private static RobotStatus m_robotStatus = RobotStatus.AIMED;
     public static enum RobotStatus{
         AIMING,
         AIMED,

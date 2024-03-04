@@ -7,6 +7,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
 import frc.robot.math.PhoenixUnits;
 import frc.robot.util.AprilTagCamera.Resolution;
 import frc.robot.util.PIDUtil;
@@ -35,7 +38,11 @@ public class Constants {
 
         //public static final double MAGNET_OFFSET = -0.382080;
         //public static final double MAGNET_OFFSET = -0.762207;
-        public static final double MAGNET_OFFSET = -0.986084;
+        public static final double MAGNET_OFFSET = -0.439697;
+
+        
+
+       
     }
 
     public static final class Vision {

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
 import frc.robot.Constants.Shooter;
+import frc.robot.Constants.ShooterPivot;
 import frc.robot.math.Vector;
 import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ShooterPivotSubsystem;
@@ -55,7 +56,7 @@ public class AutoAim extends Command {
     Superstructure.setRobotStatus(RobotStatus.AIMING);
 
     m_Pivot = ShooterPivotSubsystem.getInstance();
-    m_Pivot.setSetpointInDegrees(55);
+    m_Pivot.setSetpointInDegrees(0);
     m_Pivot.enablePID();
 
     m_shooter.setSetpoint(-80);
@@ -85,6 +86,11 @@ public class AutoAim extends Command {
     double distance = helper.DistanceBetweenPoses();
     double angle = helper.AngleBetweenPoses();
     double heading = pose.getRotation().getDegrees();
+
+    double pivotTargetAngle = m_Pivot.getPivotTargetAngle(distance * 100);
+
+    SmartDashboard.putNumber("Pivot Angle Setpoint.....", m_Pivot.getPivotTargetAngle(distance * 100));
+    SmartDashboard.putNumber("Robot Distance From Speaker", distance);
 
     if(heading < 0){
       heading += 360;
@@ -164,6 +170,14 @@ public class AutoAim extends Command {
       canAim= true;
     }
 
+    if(pivotTargetAngle == Double.NaN){
+      canAim = false;
+    }
+    else {
+      canAim = true;
+      m_Pivot.setSetpointInDegrees(pivotTargetAngle);
+    }
+
     if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint() && canAim){
       Superstructure.setRobotStatus(RobotStatus.AIMED);
     }
@@ -171,7 +185,7 @@ public class AutoAim extends Command {
       Superstructure.setRobotStatus(RobotStatus.AIMING);
     }
 
-
+    
     TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
     
 
