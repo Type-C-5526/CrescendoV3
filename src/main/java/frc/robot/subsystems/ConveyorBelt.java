@@ -8,12 +8,16 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ConveyorBelt extends SubsystemBase {
   /** Creates a new ConveyorBelt. */
   private boolean m_enabled;
+
+  private DigitalInput m_colorSensor;
 
   private CANSparkMax m_motor1;
   private SparkPIDController m_pidController;
@@ -34,14 +38,14 @@ public class ConveyorBelt extends SubsystemBase {
     m_pidController.setD(Constants.Conveyor.ConveyorPIDConstants.getD());
     m_pidController.setOutputRange(-1, 1);
 
-
+    m_colorSensor = new DigitalInput(3);
 
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+    SmartDashboard.putBoolean("Holding Note:", m_colorSensor.get());
     if(m_enabled){
     //m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
     }
