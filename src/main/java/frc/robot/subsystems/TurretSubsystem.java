@@ -49,6 +49,7 @@ public class TurretSubsystem extends SubsystemBase {
     m_motor1.setSmartCurrentLimit(30);
     m_followerMotor2.setSmartCurrentLimit(30);
     m_motor1.setIdleMode(IdleMode.kBrake);
+
   
 
     m_pidController = m_motor1.getPIDController();
@@ -74,6 +75,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Turret Value: ", m_motor1.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Angle: ", getConvertedAngle(m_motor1.getEncoder().getPosition()));
+    SmartDashboard.putBoolean("Is Home: ", isHome());
     if(m_enabled){
       m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
     }

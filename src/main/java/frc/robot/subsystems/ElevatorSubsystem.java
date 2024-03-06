@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,6 +24,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX m_followerMotor;
 
   private TalonFXConfiguration m_motor1Configuration;
+  private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
 
   private PositionVoltage m_PositionVoltage;
   private double m_setpoint;
@@ -44,19 +49,28 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     m_motor1Configuration = new TalonFXConfiguration();
 
-    m_motor1Configuration.Slot0.kP = Constants.Elevator.pidConstants.getP();
-    m_motor1Configuration.Slot0.kI = Constants.Elevator.pidConstants.getI();
-    m_motor1Configuration.Slot0.kD = Constants.Elevator.pidConstants.getD();
+    /* Configure current limits */
+    MotionMagicConfigs mm = m_motor1Configuration.MotionMagic;
+    mm.MotionMagicCruiseVelocity = 40; // 5 rotations per second cruise
+    mm.MotionMagicAcceleration = 50; // Take approximately 0.5 seconds to reach max vel
+    // Take approximately 0.2 seconds to reach max accel 
+    mm.MotionMagicJerk = 90;
 
-    m_motor1Configuration.Voltage.PeakForwardVoltage = 8;
-    m_motor1Configuration.Voltage.PeakReverseVoltage = -8;
-
-    m_motor1Configuration.CurrentLimits.StatorCurrentLimitEnable = true;
-    m_motor1Configuration.CurrentLimits.StatorCurrentLimit = 150;
-    m_motor1Configuration.CurrentLimits.SupplyCurrentLimitEnable = true;
-    m_motor1Configuration.CurrentLimits.SupplyCurrentLimit = 40;
+    Slot0Configs slot0 = m_motor1Configuration.Slot0;
+    slot0.kP = 50;
+    slot0.kI = 0;
+    slot0.kD = 0.005;
+    slot0.kV = 0.22;
+    slot0.kS = 2.0; // Approximately 0.25V to get the mechanism moving
     
-    m_motor1.getConfigurator().apply(m_motor1Configuration);
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for(int i = 0; i < 5; ++i) {
+      status = m_motor1.getConfigurator().apply(m_motor1Configuration);
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not configure device. Error: " + status.toString());
+    }
 
     m_followerMotor.getConfigurator().apply(m_motor1Configuration);
 
@@ -70,7 +84,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     if(m_enabled){
-      m_motor1.setControl(m_PositionVoltage.withPosition(m_setpoint));
+      m_motor1.setControl(m_mmReq.withPosition(m_setpoint).withSlot(0));
     }
     else {
       m_motor1.setControl(m_break);

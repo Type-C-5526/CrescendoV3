@@ -7,10 +7,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 public class LeaveAmp extends Command {
   private ShooterPivotSubsystem m_PivotSubsystem = ShooterPivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
+  private TurretSubsystem m_turret = TurretSubsystem.getInstance();
   /** Creates a new HalfExtensionElevator. */
   public LeaveAmp() {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -20,7 +22,7 @@ public class LeaveAmp extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_PivotSubsystem.setSetpointInDegrees(30);
+    m_PivotSubsystem.setSetpointInDegrees(-21);
     m_PivotSubsystem.enablePID();
     
   }
@@ -29,16 +31,17 @@ public class LeaveAmp extends Command {
   @Override
   public void execute() {
     if(m_PivotSubsystem.atSetpoint()){
-    m_Elevator.setSetpointAsPercent(50);
-    m_Elevator.enableMotorPID();
+      m_Elevator.setSetpointAsPercent(90);
+      m_Elevator.enableMotorPID();
+      m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(90));
+      m_turret.enableTurretPID();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_Elevator.disableMotorPID();
-    m_PivotSubsystem.disablePID();
+    new GoHome().schedule();
   }
 
   // Returns true when the command should end.

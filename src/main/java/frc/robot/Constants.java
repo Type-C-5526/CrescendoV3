@@ -78,7 +78,7 @@ public class Constants {
         public static final int MagneticSwitch2 = 1; 
 
 
-        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.08,0,0,1);
+        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.04,0,0,1);
 
 
     }

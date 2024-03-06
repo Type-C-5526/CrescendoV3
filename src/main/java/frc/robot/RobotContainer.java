@@ -31,8 +31,9 @@ import frc.robot.subsystems.TurretSubsystem;
 public class RobotContainer {
 
   
-  private ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+  private ElevatorSubsystem m_elevator = ElevatorSubsystem.getInstance();
   private LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
+  private ConveyorBelt m_conveyorBelt = ConveyorBelt.getInstance();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -89,6 +90,7 @@ public class RobotContainer {
     driver.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
 
+    driver.a().whileTrue(new LeaveAmp());
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

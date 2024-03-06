@@ -47,6 +47,7 @@ public class GoHome extends Command {
   public void execute() {
     if(m_Turret.isAtSetpoint()){
       m_Pivot.setSetpointInDegrees(-10);
+      m_Elevator.disableMotorPID();
     }
   }
 
@@ -61,6 +62,6 @@ public class GoHome extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_Timer.get() > 5 || (m_Pivot.atSetpoint() && m_Turret.isAtSetpoint());
+    return m_Timer.get() > 10 || (m_Pivot.atSetpoint() && m_Turret.isAtSetpoint());
   }
 }
