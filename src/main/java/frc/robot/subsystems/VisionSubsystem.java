@@ -16,141 +16,52 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Vision;
 import frc.robot.util.AprilTagCamera;
 
-public class VisionSubsystem extends SubsystemBase implements AutoCloseable{
+public class VisionSubsystem extends SubsystemBase {
 
-
-
-    private AprilTagCamera[] m_apriltagCameras;
-
-    List<EstimatedRobotPose> estimatedPoses;
-
-    private AtomicReference<List<EstimatedRobotPose>> m_estimatedRobotPoses;
-    private AtomicReference<List<Integer>> m_visibleTagIDs;
-
-    private Notifier m_cameraNotifier;
-    private AprilTagFieldLayout m_fieldLayout;
-    private Supplier<Pose2d> m_poseSupplier;
+    private AprilTagCamera m_aprilTagCamera;
 
     private static VisionSubsystem m_instance;
 
+
     public VisionSubsystem(){
 
-        this.m_apriltagCameras = new AprilTagCamera[1];
-        
-        /*this.m_apriltagCameras[0] = new AprilTagCamera(
-            Constants.Vision.CAMERA_A_NAME,
-            Constants.Vision.CAMERA_A_LOCATION,
-            Constants.Vision.CAMERA_A_RESOLUTION,
-            Constants.Vision.CAMERA_A_FOV
-        );*/
-
-        this.m_apriltagCameras[0] = new AprilTagCamera(
-            Constants.Vision.CAMERA_A_NAME,
-            Constants.Vision.CAMERA_A_LOCATION,
-            Constants.Vision.CAMERA_A_RESOLUTION,
-            Constants.Vision.CAMERA_A_FOV
-        );
-
-        this.m_estimatedRobotPoses = new AtomicReference<List<EstimatedRobotPose>>();
-        this.m_visibleTagIDs = new AtomicReference<List<Integer>>();
-
-        // Load AprilTag field layout
-        m_fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-        // PV estimates will always be blue
-        m_fieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
-
-
-        // Setup camera pose estimation threads
-        this.m_cameraNotifier = (RobotBase.isReal())
-        ? new Notifier(() -> {
-            for (var camera : m_apriltagCameras) camera.run();
-            updateEstimatedGlobalPoses();
-        })
-        : new Notifier(() -> {
-            /*if (m_poseSupplier != null) m_sim.update(m_poseSupplier.get());
-            for (var camera : m_apriltagCameras) camera.run();
-            updateEstimatedGlobalPoses();*/
-        });
-
-        // Set all cameras to primary pipeline
-        for (var camera : m_apriltagCameras) camera.setPipelineIndex(0);
-
-        // Add AprilTag cameras to sim
-        //for (var camera : m_apriltagCameras) m_sim.addCamera(camera.getCameraSim(), camera.getTransform());
-
-        // Start camera thread
-        m_cameraNotifier.setName(getName());
-        m_cameraNotifier.startPeriodic(Constants.Vision.ROBOT_LOOP_PERIOD);
+        this.m_aprilTagCamera = new AprilTagCamera(
+            Vision.CAMERA_A_NAME, 
+            Vision.CAMERA_A_LOCATION, 
+            null, 
+            null);
 
     }
 
-    /**
-     * Update currently estimated robot pose from each camera
-     */
-    private void updateEstimatedGlobalPoses() {
-        estimatedPoses = new ArrayList<EstimatedRobotPose>();
 
-        List<Integer> visibleTagIDs = new ArrayList<Integer>();
-        HashSet<Pose3d> visibleTags = new HashSet<Pose3d>();
-        List<Pose2d> loggedPoses = new ArrayList<Pose2d>();
-        for (var camera : m_apriltagCameras) {
-            var result = camera.getLatestEstimatedPose();
-            if (result == null) continue;
-            result.targetsUsed.forEach((photonTrackedTarget) -> {
-                if (photonTrackedTarget.getFiducialId() == -1) return;
-                visibleTagIDs.add(photonTrackedTarget.getFiducialId());
-                visibleTags.add(m_fieldLayout.getTagPose(photonTrackedTarget.getFiducialId()).get());
-            });
-            estimatedPoses.add(result);
-            loggedPoses.add(result.estimatedPose.toPose2d());
-        }
 
-        /* 
-        // Log visible tags and estimated poses
-        Logger.recordOutput(getName() + VISIBLE_TAGS_LOG_ENTRY, visibleTags.toArray(new Pose3d[0]));
-        Logger.recordOutput(getName() + ESTIMATED_POSES_LOG_ENTRY, loggedPoses.toArray(new Pose2d[0]));
-        */
-        m_visibleTagIDs.set(visibleTagIDs);
-        m_estimatedRobotPoses.set(estimatedPoses);
-    }
-
-    /**
-     * Set pose supplier for simulation
-     * @param poseSupplier Pose supplier from drive subsystem
-     */
-    public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
-        m_poseSupplier = poseSupplier;
-    }
-
-    /**
-     * Get IDs of currently visible tags
-     * @return List of IDs of currently visible tags
-     */
-    public List<Integer> getVisibleTagIDs() {
-        return m_visibleTagIDs.get();
-    }
-
-    /**
-     * Get currently estimated robot poses from each camera
-     * @return List of estimated poses, the timestamp, and targets used to create the estimate
-     */
-    public List<EstimatedRobotPose> getEstimatedGlobalPoses() {
-        return estimatedPoses;
-    }
-
-    @Override
-    public void close() {
-        for (var camera : m_apriltagCameras) camera.close();
-        m_cameraNotifier.close();
-    }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        SmartDashboard.putBoolean("Is Camera Connected: ", m_aprilTagCamera.isCameraConnected());
+
+        if(m_aprilTagCamera.isCameraConnected()){
+            double x = m_aprilTagCamera.getPipelineResult().getBestTarget().getBestCameraToTarget().getX();
+            SmartDashboard.putNumber("x april tag: ", x);
+        }
+
+        if(!m_aprilTagCamera.getPipelineResult().hasTargets()) return;
+        
+        if(!m_aprilTagCamera.getEstimatedRobotPose().isEmpty()){
+            SmartDashboard.putNumber("Vision Pose X", m_aprilTagCamera.getEstimatedRobotPose().get().estimatedPose.getX());
+        }else{
+            SmartDashboard.putNumber("Vision Pose X", 0);
+        }
+        
+        
     }
 
     public static VisionSubsystem getInstance(){

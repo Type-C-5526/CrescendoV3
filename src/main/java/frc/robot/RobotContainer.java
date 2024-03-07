@@ -28,6 +28,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
 
@@ -35,6 +36,7 @@ public class RobotContainer {
   private ElevatorSubsystem m_elevator = ElevatorSubsystem.getInstance();
   private LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private ConveyorBelt m_conveyorBelt = ConveyorBelt.getInstance();
+  private VisionSubsystem m_vision = VisionSubsystem.getInstance();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity

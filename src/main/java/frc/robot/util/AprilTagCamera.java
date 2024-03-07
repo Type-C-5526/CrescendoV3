@@ -1,25 +1,30 @@
 package frc.robot.util;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Translation3d;
+
 
 /** Create a camera */
-public class AprilTagCamera implements Runnable, AutoCloseable {
+public class AprilTagCamera {
   private final double APRILTAG_POSE_AMBIGUITY_THRESHOLD = 0.2;
+
+  private final PhotonCamera m_camera;
+  private final Transform3d m_robotToCam;
+  private final PhotonPoseEstimator m_estimatedRobotPose;
+
+  private final AprilTagFieldLayout m_fieldLayout;
 
   public enum Resolution {
     RES_320_240(320, 240),
@@ -37,13 +42,6 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
     }
   }
 
-  private PhotonCamera m_camera;
-  private PhotonCameraSim m_cameraSim;
-  private PhotonPoseEstimator m_poseEstimator;
-  private Transform3d m_transform;
-  private AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose;
-
-  private EstimatedRobotPose estimatedPose;
 
   /**
    * Create VisionCamera
@@ -54,67 +52,53 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
    */
   public AprilTagCamera(String name, Transform3d transform, Resolution resolution, Rotation2d fovDiag) {
     this.m_camera = new PhotonCamera(name);
-    this.m_transform = transform;
-    var fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    // PV estimates will always be blue
-    fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-    this.m_poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, m_camera, m_transform);
-    m_poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    this.m_robotToCam = transform;
 
-    this.m_atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
+    this.m_fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    m_fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
-    // Create simulated AprilTag camera
-    var cameraProperties = SimCameraProperties.PERFECT_90DEG();
-    cameraProperties.setCalibration(resolution.width, resolution.height, fovDiag);
-    this.m_cameraSim = new PhotonCameraSim(m_camera, cameraProperties);
+    this.m_estimatedRobotPose = new PhotonPoseEstimator(
+      m_fieldLayout, 
+      PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      m_camera, 
+      transform);
 
-    // Enable wireframe in sim camera stream
-    m_cameraSim.enableDrawWireframe(true);
+    m_estimatedRobotPose.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
   }
 
-  /**
-   * Get camera sim
-   * @return Simulated camera object
-   */
-  public PhotonCameraSim getCameraSim() {
-    return m_cameraSim;
+
+  public Optional<EstimatedRobotPose> getEstimatedRobotPose(){
+    return m_estimatedRobotPose.update(getPipelineResult());
   }
 
-  @Override
-  public void run() {
-    // Return if camera or field layout failed to load
-    if (m_poseEstimator == null || m_camera == null) return;
+  public PhotonPipelineResult getPipelineResult(){
+    return m_camera.getLatestResult();
+  }
 
-    // Update and log inputs
-    PhotonPipelineResult pipelineResult = m_camera.getLatestResult();
+  public boolean checkTagsDistance(double distance, int numberOfTags){
 
-    // Return if result is non-existent or invalid
-    if (!pipelineResult.hasTargets()) return;
-    if (pipelineResult.targets.size() == 1
-        && pipelineResult.targets.get(0).getPoseAmbiguity() > APRILTAG_POSE_AMBIGUITY_THRESHOLD) return;
+    var result = getPipelineResult();
 
-    // Update pose estimate
-    m_poseEstimator.update(pipelineResult).ifPresent(estimatedRobotPose -> {
-      estimatedPose = estimatedRobotPose;
-      /* 
-      var estimatedPose = estimatedRobotPose.estimatedPose;
-        // Make sure the measurement is on the field
-        if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= Constants.Field.FIELD_LENGTH
-            && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= Constants.Field.FIELD_WIDTH) {
-          m_atomicEstimatedRobotPose.set(estimatedRobotPose);
+    if (result.hasTargets()) {
+
+      if(result.getTargets().size() == numberOfTags){
+
+        if (result.getBestTarget().getBestCameraToTarget().getTranslation().getDistance(new Translation3d()) < distance) {
+          
+          return true;
+
         }
-        */
-    });
+
+      }
+    }
+    return false;
   }
 
-  /**
-   * Gets the latest robot pose. Calling this will only return the pose once.
-   * If it returns a non-null value, it is a new estimate that hasn't been returned before.
-   * This pose will always be for the BLUE alliance.
-   * @return Latest estimated pose
-   */
-  public EstimatedRobotPose getLatestEstimatedPose() {
-    return estimatedPose;
+
+
+  public boolean isCameraConnected(){
+    return m_camera.isConnected();
   }
 
   /**
@@ -130,11 +114,7 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
    * @return Camera to robot transform
    */
   public Transform3d getTransform() {
-    return m_transform;
+    return m_robotToCam;
   }
 
-  @Override
-  public void close() {
-    m_camera.close();
-  }
 }

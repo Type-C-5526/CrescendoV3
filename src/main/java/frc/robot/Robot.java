@@ -30,6 +30,8 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
 
+    /* 
+
     if (UseVision) {    
 
       var visionEstimatedRobotPoses = VisionSubsystem.getInstance().getEstimatedGlobalPoses();
@@ -49,6 +51,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Using Vision", false);
       }
 
+      */
+
       
 
       /* 
@@ -60,7 +64,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
       */
-    }
+    //}
   }
 
   @Override
