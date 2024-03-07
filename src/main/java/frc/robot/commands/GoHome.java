@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.TurretSubsystem;
@@ -16,7 +16,7 @@ import frc.robot.subsystems.Superstructure.RobotStatus;
 public class GoHome extends Command {
 
   private ElevatorSubsystem m_Elevator;
-  private ShooterPivotSubsystem m_Pivot;
+  private PivotSubsystem m_Pivot;
   private ShooterSubsystem m_Shooter;
   private TurretSubsystem m_Turret;
   private Timer m_Timer;
@@ -25,7 +25,7 @@ public class GoHome extends Command {
   public GoHome() {
     // Use addRequirements() here to declare subsystem dependencies.
     m_Elevator = ElevatorSubsystem.getInstance();
-    m_Pivot = ShooterPivotSubsystem.getInstance();
+    m_Pivot = PivotSubsystem.getInstance();
     m_Shooter = ShooterSubsystem.getInstance();
     m_Turret = TurretSubsystem.getInstance();
     m_Timer = new Timer();

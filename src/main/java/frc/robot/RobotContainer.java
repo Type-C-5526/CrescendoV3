@@ -26,7 +26,7 @@ import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
@@ -58,7 +58,7 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private final ShooterPivotSubsystem m_pivot = ShooterPivotSubsystem.getInstance();
+  private final PivotSubsystem m_pivot = PivotSubsystem.getInstance();
 
   private void configureBindings() {
 

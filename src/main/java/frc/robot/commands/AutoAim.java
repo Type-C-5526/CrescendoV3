@@ -16,7 +16,7 @@ import frc.robot.Constants.Shooter;
 import frc.robot.Constants.ShooterPivot;
 import frc.robot.math.Vector;
 import frc.robot.subsystems.ConveyorBelt;
-import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.TurretSubsystem;
@@ -27,7 +27,7 @@ public class AutoAim extends Command {
 
   private Supplier<Pose2d> m_poseSupplier;
   private boolean isBlue;
-  private ShooterPivotSubsystem m_Pivot;
+  private PivotSubsystem m_Pivot;
 
   private ShooterSubsystem m_shooter;
   private TurretSubsystem m_turret;
@@ -55,7 +55,7 @@ public class AutoAim extends Command {
 
     Superstructure.setRobotStatus(RobotStatus.AIMING);
 
-    m_Pivot = ShooterPivotSubsystem.getInstance();
+    m_Pivot = PivotSubsystem.getInstance();
     m_Pivot.setSetpointInDegrees(0);
     m_Pivot.enablePID();
 

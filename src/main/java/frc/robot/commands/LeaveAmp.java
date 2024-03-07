@@ -6,11 +6,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 public class LeaveAmp extends Command {
-  private ShooterPivotSubsystem m_PivotSubsystem = ShooterPivotSubsystem.getInstance();
+  private PivotSubsystem m_PivotSubsystem = PivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
   private TurretSubsystem m_turret = TurretSubsystem.getInstance();
   /** Creates a new HalfExtensionElevator. */

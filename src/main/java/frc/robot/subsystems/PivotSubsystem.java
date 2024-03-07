@@ -34,9 +34,9 @@ import frc.robot.math.LinearInterpolation;
 import frc.robot.math.PhoenixUnits;
 import frc.robot.math.Point;
 
-public class ShooterPivotSubsystem extends SubsystemBase {
+public class PivotSubsystem extends SubsystemBase {
 
-  private static ShooterPivotSubsystem m_instance;
+  private static PivotSubsystem m_instance;
 
   private PIDController m_PID;
   private DutyCycleOut m_dutyCycle = new DutyCycleOut(0);
@@ -69,7 +69,7 @@ public class ShooterPivotSubsystem extends SubsystemBase {
   
 
   /** Creates a new ShooterPivotSubsystem. */
-  public ShooterPivotSubsystem() {
+  public PivotSubsystem() {
     m_points = new ArrayList<>();
     setTableValues();
     m_interpolation = new LinearInterpolation(m_points);
@@ -199,9 +199,9 @@ public class ShooterPivotSubsystem extends SubsystemBase {
     }
 
 
-  public static ShooterPivotSubsystem getInstance(){
+  public static PivotSubsystem getInstance(){
     if(m_instance == null){
-      m_instance = new ShooterPivotSubsystem();
+      m_instance = new PivotSubsystem();
     }
     return m_instance;
   }

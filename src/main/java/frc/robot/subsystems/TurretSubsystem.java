@@ -11,10 +11,14 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Turret;
 
 public class TurretSubsystem extends SubsystemBase {
   /** Creates a new Turret. */
@@ -26,11 +30,15 @@ public class TurretSubsystem extends SubsystemBase {
   private DigitalInput m_magneticSwitch1;
   private DigitalInput m_magneticSwitch2;
 
-  private SparkPIDController m_pidController;
   private RelativeEncoder m_encoder;
 
   private double m_setpoint = 0.0;
   private boolean m_enabled;
+
+  private PIDController m_pidController;
+
+  private double m_maxOutput = 0.5;
+  private SlewRateLimiter m_filter;
 
 
   public TurretSubsystem() {
@@ -39,6 +47,11 @@ public class TurretSubsystem extends SubsystemBase {
 
     m_magneticSwitch1 = new DigitalInput(Constants.Turret.MagneticSwitch1);
     m_magneticSwitch2 = new DigitalInput(Constants.Turret.MagneticSwitch2);
+
+    m_pidController = new PIDController(Turret.TurretPIDConstants.getP(), Turret.TurretPIDConstants.getI(), Turret.TurretPIDConstants.getD());
+    m_pidController.setTolerance(0.01);
+  
+    m_filter = new SlewRateLimiter(1);
 
     m_motor1 = new CANSparkMax(Constants.Turret.MotorID, MotorType.kBrushless);
     m_followerMotor2 = new CANSparkMax(Constants.Turret.MotorFollowerID, MotorType.kBrushless);
@@ -50,17 +63,15 @@ public class TurretSubsystem extends SubsystemBase {
     m_followerMotor2.setSmartCurrentLimit(30);
     m_motor1.setIdleMode(IdleMode.kBrake);
 
+
+
   
 
-    m_pidController = m_motor1.getPIDController();
 
     m_encoder = m_motor1.getEncoder();
     m_encoder.setPosition(0.0);
 
-    m_pidController.setP(Constants.Turret.TurretPIDConstants.getP());
-    m_pidController.setI(Constants.Turret.TurretPIDConstants.getI());
-    m_pidController.setD(Constants.Turret.TurretPIDConstants.getD());
-    m_pidController.setOutputRange(-1, 1);
+
 
     m_followerMotor2.follow(m_motor1);
     
@@ -72,12 +83,22 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double output = m_pidController.calculate(getMeasurment());
+    output = m_filter.calculate(output);
 
     SmartDashboard.putNumber("Turret Value: ", m_motor1.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Angle: ", getConvertedAngle(m_motor1.getEncoder().getPosition()));
     SmartDashboard.putBoolean("Is Home: ", isHome());
+    SmartDashboard.putNumber("Turret Output", output);
+
+
     if(m_enabled){
-      m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
+      if(output > m_maxOutput){
+        output = m_maxOutput;
+      }else if(output < -m_maxOutput){
+        output = - m_maxOutput;
+      }
+      m_motor1.set(output);
     }
     else {
       m_motor1.stopMotor();
@@ -106,6 +127,10 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void resetEncoder(){
     m_encoder.setPosition(0.0);
+  }
+
+  public double getMeasurment(){
+    return m_motor1.getEncoder().getPosition();
   }
 
 

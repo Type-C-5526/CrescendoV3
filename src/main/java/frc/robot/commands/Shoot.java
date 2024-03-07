@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ConveyorBelt;
-import frc.robot.subsystems.ShooterPivotSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.RobotStatus;
@@ -15,13 +15,13 @@ public class Shoot extends Command {
   /** Creates a new Shoot. */
   private ShooterSubsystem m_shooter;
   private ConveyorBelt m_conveyor;
-  private ShooterPivotSubsystem m_pivot;
+  private PivotSubsystem m_pivot;
 
   public Shoot() {
     // Use addRequirements() here to declare subsystem dependencies.
     m_conveyor = ConveyorBelt.getInstance();
     m_shooter = ShooterSubsystem.getInstance();
-    m_pivot = ShooterPivotSubsystem.getInstance();
+    m_pivot = PivotSubsystem.getInstance();
   }
 
   // Called when the command is initially scheduled.
