@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ShooterPivot;
@@ -16,7 +17,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private final boolean UseVision = false;
+  private final boolean UseVision = true;
 
   @Override
   public void robotInit() {
@@ -33,15 +34,22 @@ public class Robot extends TimedRobot {
 
       var visionEstimatedRobotPoses = VisionSubsystem.getInstance().getEstimatedGlobalPoses();
 
-      // Add measurment if results exist
-      if (!visionEstimatedRobotPoses.isEmpty()){
-        // Add vision measurements to pose estimator
-        for (var visionEstimatedRobotPose : visionEstimatedRobotPoses) {
-          // if (visionEstimatedRobotPose.estimatedPose.toPose2d().getTranslation().getDistance(m_previousPose.getTranslation()) > 1.0) continue;
-          m_robotContainer.drivetrain.addVisionMeasurement(visionEstimatedRobotPose.estimatedPose.toPose2d(), visionEstimatedRobotPose.timestampSeconds);
+      if (visionEstimatedRobotPoses != null){
+        SmartDashboard.putBoolean("Using Vision", true);
+        // Add measurment if results exist
+        if (!visionEstimatedRobotPoses.isEmpty()){
+          // Add vision measurements to pose estimator
+          for (var visionEstimatedRobotPose : visionEstimatedRobotPoses) {
+            // if (visionEstimatedRobotPose.estimatedPose.toPose2d().getTranslation().getDistance(m_previousPose.getTranslation()) > 1.0) continue;
+            m_robotContainer.drivetrain.addVisionMeasurement(visionEstimatedRobotPose.estimatedPose.toPose2d(), visionEstimatedRobotPose.timestampSeconds);
+          }
+          
         }
-        
-      };
+      }else{
+        SmartDashboard.putBoolean("Using Vision", false);
+      }
+
+      
 
       /* 
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;

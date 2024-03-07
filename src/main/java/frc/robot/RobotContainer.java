@@ -24,6 +24,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterPivotSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -90,7 +91,9 @@ public class RobotContainer {
     driver.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
 
-    driver.a().whileTrue(new LeaveAmp());
+    //driver.a().whileTrue(new LeaveAmp());
+    driver.a().whileTrue(new InstantCommand(() -> IntakeSubsystem.getInstance().setSpeed(-0.8)))
+      .whileFalse(new InstantCommand(() -> IntakeSubsystem.getInstance().turnoff()));
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */

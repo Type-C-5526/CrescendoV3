@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.util.Units;
 import frc.robot.math.PhoenixUnits;
 import frc.robot.util.AprilTagCamera.Resolution;
 import frc.robot.util.PIDUtil;
@@ -52,17 +53,27 @@ public class Constants {
         /** Robot loop period */
         public static final double ROBOT_LOOP_PERIOD = 1.0 / ROBOT_LOOP_HZ;
 
-        public static final int NUMBER_OF_CAMERAS = 1;
+        public static final int NUMBER_OF_CAMERAS = 2;
 
-        public static final String CAMERA_A_NAME = "Arducam_OV9782_USB_Camera_A";
+        public static final String CAMERA_A_NAME = "Arducam_OV9281_USB_Camera_A";
 
         public static final Transform3d CAMERA_A_LOCATION = new Transform3d(
-            new Translation3d(0.381, 0.133, 0.102),
-            new Rotation3d(0.0, Math.toRadians(-20.0), 0.0)
+            new Translation3d(Units.inchesToMeters(-14 + 2.75), Units.inchesToMeters(-15 + 4), Units.inchesToMeters(9)),
+            new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(180))
         );
 
         public static final Resolution CAMERA_A_RESOLUTION = Resolution.RES_1280_720;
-        public static final Rotation2d CAMERA_A_FOV = Rotation2d.fromDegrees(79.7);
+        public static final Rotation2d CAMERA_A_FOV = Rotation2d.fromDegrees(78.44);
+
+        public static final String CAMERA_B_NAME = "Arducam_OV9281_USB_Camera_B";
+
+        public static final Transform3d CAMERA_B_LOCATION = new Transform3d(
+            new Translation3d(0.00, Units.inchesToMeters(15), Units.inchesToMeters(7)),
+            new Rotation3d(0.0, Math.toRadians(-25.0), 0.0)
+        );
+
+        public static final Resolution CAMERA_B_RESOLUTION = Resolution.RES_1280_720;
+        public static final Rotation2d CAMERA_B_FOV = Rotation2d.fromDegrees(77.68);
 
     }
 

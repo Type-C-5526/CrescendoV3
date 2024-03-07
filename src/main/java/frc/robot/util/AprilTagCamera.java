@@ -12,6 +12,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
@@ -41,6 +42,8 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
   private PhotonPoseEstimator m_poseEstimator;
   private Transform3d m_transform;
   private AtomicReference<EstimatedRobotPose> m_atomicEstimatedRobotPose;
+
+  private EstimatedRobotPose estimatedPose;
 
   /**
    * Create VisionCamera
@@ -92,12 +95,15 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
 
     // Update pose estimate
     m_poseEstimator.update(pipelineResult).ifPresent(estimatedRobotPose -> {
+      estimatedPose = estimatedRobotPose;
+      /* 
       var estimatedPose = estimatedRobotPose.estimatedPose;
         // Make sure the measurement is on the field
         if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= Constants.Field.FIELD_LENGTH
             && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= Constants.Field.FIELD_WIDTH) {
           m_atomicEstimatedRobotPose.set(estimatedRobotPose);
         }
+        */
     });
   }
 
@@ -108,7 +114,7 @@ public class AprilTagCamera implements Runnable, AutoCloseable {
    * @return Latest estimated pose
    */
   public EstimatedRobotPose getLatestEstimatedPose() {
-    return m_atomicEstimatedRobotPose.getAndSet(null);
+    return estimatedPose;
   }
 
   /**
