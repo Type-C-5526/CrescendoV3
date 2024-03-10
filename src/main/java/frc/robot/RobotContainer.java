@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.ConveyorIn;
+import frc.robot.commands.DriveWithLockedHeading;
 import frc.robot.commands.FeedFromSource;
 import frc.robot.commands.LeaveAmp;
 import frc.robot.commands.Shoot;
@@ -74,6 +75,14 @@ public class RobotContainer {
         ).ignoringDisable(true));
 
     driver.leftBumper().whileTrue(drivetrain.applyRequest(() -> brake));
+    
+    driver.x().whileTrue(new DriveWithLockedHeading(
+      () -> drivetrain.getState().Pose, 
+      () -> driver.getLeftY(), 
+      () -> driver.getLeftX(), 
+      drive, 
+      MaxAngularRate, 
+      MaxSpeed));
     //joystick.a().whileTrue(new LeaveAmp());
     
     //joystick.b().whileTrue(drivetrain

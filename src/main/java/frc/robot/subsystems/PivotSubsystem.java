@@ -213,15 +213,15 @@ public class PivotSubsystem extends SubsystemBase {
     return m_pidEnabled;
   }
   private void setTableValues(){
-    m_points.add(new Point(116.1,52.8));
-    m_points.add(new Point(164.1, 47.4));
-    m_points.add(new Point(194.6, 40.1));
-    m_points.add(new Point(262.1, 36.8));
+    m_points.add(new Point(116.1,49.8));
+    m_points.add(new Point(164.1, 44.4));
+    m_points.add(new Point(194.6, 37.1));
+    m_points.add(new Point(262.1, 33.8));
     m_points.add(new Point(267.6, 32.85));
     m_points.add(new Point(293.1, 31.00));
-    m_points.add(new Point(329.1, 28.2));
-    m_points.add(new Point(379.6, 25.3));
-    m_points.add(new Point(460.1, 23.29));
+    m_points.add(new Point(329.1, 30.2));
+    m_points.add(new Point(379.6, 27.3));
+    m_points.add(new Point(460.1, 25.29));
     m_points.add(new Point(498.1, 22.58));
     m_points.add(new Point(554.1, 22.14));
     m_points.add(new Point(611.1, 21.26));

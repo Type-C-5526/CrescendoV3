@@ -31,8 +31,7 @@ public class FeedFromSource extends Command {
     m_pivot.setSetpointInDegrees(30);
     m_pivot.enablePID();
 
-    m_shooter.setSetpoint(80);
-    m_shooter.enableMotorPID();
+   
 
     m_conveyor.setMotorVelocity(1);
   }
@@ -40,6 +39,10 @@ public class FeedFromSource extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if(m_pivot.getMeasurment() > -20){
+     m_shooter.setSetpoint(80);
+    m_shooter.enableMotorPID();
+    }
 
   }
 
