@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.ShooterPivot;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.util.Telemetry5526;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private Telemetry5526 m_telemetry;
 
   private final boolean UseVision = true;
 
@@ -24,6 +26,9 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
+
+    m_telemetry = new Telemetry5526();
+
 
   }
   @Override

@@ -25,6 +25,7 @@ public class ConveyorBelt extends SubsystemBase {
   private static ConveyorBelt m_instance;
   private double m_MotorOutput;
   private double m_setpoint;
+  private double m_motorVelocity = 0;
   public ConveyorBelt() {
     m_enabled = false;
 
@@ -38,12 +39,13 @@ public class ConveyorBelt extends SubsystemBase {
     m_pidController.setD(Constants.Conveyor.ConveyorPIDConstants.getD());
     m_pidController.setOutputRange(-1, 1);
 
-    m_colorSensor = new DigitalInput(3);
+    m_colorSensor = new DigitalInput(Constants.Conveyor.ColorSensorChannel);
 
   }
 
   @Override
   public void periodic() {
+    m_motorVelocity = m_motor1.get();
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Holding Note:", m_colorSensor.get());
     if(m_enabled){
@@ -54,6 +56,30 @@ public class ConveyorBelt extends SubsystemBase {
     }
 
 
+  }
+  public boolean hasGamePiece(){
+    return m_colorSensor.get();
+  }
+  public boolean isReleasing(){
+     if(m_motorVelocity < 0){
+      return true;
+    }
+    else{
+      return false;
+    }
+
+  }
+  public boolean isHolding(){
+     if(m_motorVelocity > 0){
+      return true;
+    }
+    else{
+      return false;
+    }
+
+  }
+  public double getVelocity(){
+    return m_motor1.getEncoder().getVelocity();
   }
 
   public void setSetpoint(double _Setpoint){
@@ -67,6 +93,7 @@ public class ConveyorBelt extends SubsystemBase {
   public void disableMotorPID(){
     m_enabled = false;
   }
+
 
 
 

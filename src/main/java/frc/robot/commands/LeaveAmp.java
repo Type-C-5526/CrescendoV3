@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -13,10 +16,16 @@ public class LeaveAmp extends Command {
   private PivotSubsystem m_PivotSubsystem = PivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
   private TurretSubsystem m_turret = TurretSubsystem.getInstance();
+
+  private Supplier<Pose2d> m_poseSupplier;
   /** Creates a new HalfExtensionElevator. */
-  public LeaveAmp() {
+  public LeaveAmp(Supplier<Pose2d> _poseSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ElevatorSubsystem.getInstance());
+    m_poseSupplier = _poseSupplier;
+
+
+
   }
 
   // Called when the command is initially scheduled.
@@ -30,12 +39,27 @@ public class LeaveAmp extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_PivotSubsystem.atSetpoint()){
+    Pose2d pose = m_poseSupplier.get();
+    double heading = pose.getRotation().getDegrees();
+
+    
+
+
+    if(m_PivotSubsystem.atSetpoint()){ 
       m_Elevator.setSetpointAsPercent(90);
       m_Elevator.enableMotorPID();
-      m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(90));
+
+    if(m_Elevator.atSetpoint()){
+      if(heading > 90 && heading < 270){
+      m_turret.setSetpoint(90);
+      }
+      else{
+      m_turret.setSetpoint(-90);
+      }
       m_turret.enableTurretPID();
     }
+  }
+
   }
 
   // Called once the command ends or is interrupted.

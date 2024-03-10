@@ -51,7 +51,7 @@ public class TurretSubsystem extends SubsystemBase {
     m_pidController = new PIDController(Turret.TurretPIDConstants.getP(), Turret.TurretPIDConstants.getI(), Turret.TurretPIDConstants.getD());
     m_pidController.setTolerance(0.01);
   
-    m_filter = new SlewRateLimiter(1);
+    m_filter = new SlewRateLimiter(10);
 
     m_motor1 = new CANSparkMax(Constants.Turret.MotorID, MotorType.kBrushless);
     m_followerMotor2 = new CANSparkMax(Constants.Turret.MotorFollowerID, MotorType.kBrushless);
@@ -90,9 +90,12 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Turret Angle: ", getConvertedAngle(m_motor1.getEncoder().getPosition()));
     SmartDashboard.putBoolean("Is Home: ", isHome());
     SmartDashboard.putNumber("Turret Output", output);
+    SmartDashboard.putBoolean("Turret Is Enabled: ", m_enabled);
 
 
     if(m_enabled){
+
+      SmartDashboard.putNumber("Turret Output: ", output);
       if(output > m_maxOutput){
         output = m_maxOutput;
       }else if(output < -m_maxOutput){
@@ -107,6 +110,7 @@ public class TurretSubsystem extends SubsystemBase {
 
   public void setSetpoint(double _Setpoint){
     m_setpoint = _Setpoint;
+    m_pidController.setSetpoint(_Setpoint);
   }
 
   public void setMotorVelocity(double _velocity){
@@ -132,6 +136,13 @@ public class TurretSubsystem extends SubsystemBase {
   public double getMeasurment(){
     return m_motor1.getEncoder().getPosition();
   }
+  public double getSetpoint(){
+    return m_setpoint;
+  }
+  public boolean isEnabled(){
+    return m_enabled;
+  }
+
 
 
   public static TurretSubsystem getInstance(){

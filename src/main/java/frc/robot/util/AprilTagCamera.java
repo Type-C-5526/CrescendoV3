@@ -77,7 +77,7 @@ public class AprilTagCamera {
   }
 
   public boolean checkTagsDistance(double distance, int numberOfTags){
-
+    /* */
     var result = getPipelineResult();
 
     if (result.hasTargets()) {

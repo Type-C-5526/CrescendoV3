@@ -94,8 +94,8 @@ public class RobotContainer {
 
 
     //driver.a().whileTrue(new LeaveAmp());
-    driver.a().whileTrue(new InstantCommand(() -> IntakeSubsystem.getInstance().setSpeed(-0.8)))
-      .whileFalse(new InstantCommand(() -> IntakeSubsystem.getInstance().turnoff()));
+    driver.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
+    driver.y().whileTrue(new FeedFromSource());
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
@@ -106,7 +106,7 @@ public class RobotContainer {
     joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));*/
 
 
-    operator.rightBumper().whileTrue(new Shoot());
+    driver.rightBumper().whileTrue(new Shoot());
     operator.y().whileTrue(new ConveyorIn());
     operator.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
     operator.leftBumper().whileTrue(new FeedFromSource());

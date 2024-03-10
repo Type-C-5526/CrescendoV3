@@ -105,6 +105,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_enabled = false;
   }
 
+  public boolean atSetpoint(){
+    return Constants.Elevator.pidConstants.atSetpoint(m_motor1.getPosition().getValueAsDouble(), m_setpoint);
+  }
+
+  public boolean isEnabled(){
+    return m_enabled;
+  }
+
+  public double getSetpoint(){
+    return m_setpoint;
+  }
+  public double getPosition(){
+    return m_motor1.getPosition().getValueAsDouble();
+  }
+
+
 
 
 

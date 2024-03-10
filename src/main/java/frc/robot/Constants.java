@@ -24,8 +24,8 @@ public class Constants {
 
         public static final Translation2d CENTER = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2);
 
-        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.53);
-        public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.53);
+        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.45);
+        public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.45);
     }
 
     public static final class ShooterPivot {
@@ -48,6 +48,8 @@ public class Constants {
 
     public static final class Vision {
 
+        public static boolean USING_VISION = true;
+
         /** Robot loop frequency */
         public static final int ROBOT_LOOP_HZ = 50;
         /** Robot loop period */
@@ -58,7 +60,7 @@ public class Constants {
         public static final String CAMERA_A_NAME = "Arducam_OV9281_USB_Camera_A";
 
         public static final Transform3d CAMERA_A_LOCATION = new Transform3d(
-            new Translation3d(Units.inchesToMeters(-14 + 2.75), Units.inchesToMeters(-15 + 4), Units.inchesToMeters(9)),
+            new Translation3d(Units.inchesToMeters(14 - 2.75), Units.inchesToMeters(-15 + 4), Units.inchesToMeters(9)),
             new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(180))
         );
 
@@ -89,7 +91,7 @@ public class Constants {
         public static final int MagneticSwitch2 = 1; 
 
 
-        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.04,0,0,1);
+        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.3,0,0,1);
 
 
     }
@@ -103,13 +105,14 @@ public class Constants {
 
                 public static final TalonFXConfiguration shooterMotorConfig = new TalonFXConfiguration();
 
-                public static final PIDUtil pidConstants = new PIDUtil(6, 0, 0, 10, 0.1);
+                public static final PIDUtil pidConstants = new PIDUtil(6, 0, 0, .1, 0.1);
 
     }
 
 
      public static final class Conveyor {
         public static final int MotorID = 14;
+        public static final int ColorSensorChannel = 2;
     
         public static final PIDUtil ConveyorPIDConstants = new PIDUtil(0.145,0,0,1);
 

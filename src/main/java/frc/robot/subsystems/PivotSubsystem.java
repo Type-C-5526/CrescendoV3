@@ -22,6 +22,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
@@ -50,6 +51,10 @@ public class PivotSubsystem extends SubsystemBase {
   private List<Point> m_points;
   private LinearInterpolation m_interpolation;
 
+  private final SlewRateLimiter m_filter;
+  private double m_forwardMaxOutput = 0.5;
+  private double m_reverseMaxOutput = 0.2;
+
 
 
   /* Start at position 0, enable FOC, no feed forward, use slot 0 */
@@ -66,6 +71,7 @@ public class PivotSubsystem extends SubsystemBase {
   /* Keep a brake request so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
 
+
   
 
   /** Creates a new ShooterPivotSubsystem. */
@@ -74,8 +80,12 @@ public class PivotSubsystem extends SubsystemBase {
     setTableValues();
     m_interpolation = new LinearInterpolation(m_points);
 
+    m_filter = new SlewRateLimiter(0.01);
+    
+
+
     m_PID = new PIDController(10, 0, 0);
-    m_PID.setTolerance(0.01);
+    m_PID.setTolerance(0.005);
     
 
     m_motor = new TalonFX(ShooterPivot.MOTOR_ID, ShooterPivot.MOTOR_CANBUS);
@@ -144,7 +154,19 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Setpoint", m_setpoint);
 
     if (m_pidEnabled) {
-      m_motor.setControl(m_dutyCycle.withOutput(m_PID.calculate(getMeasurment())));
+      double output = m_PID.calculate(getMeasurment());
+
+      SmartDashboard.putNumber("Pivot PID Output", output);
+      SmartDashboard.putNumber("Slew Rate Pivot Output", m_filter.calculate(output));
+      //output = m_filter.calculate(output);
+
+      if(output > m_forwardMaxOutput){
+        output = m_forwardMaxOutput;
+      }else if(output < -m_reverseMaxOutput){
+        output = -m_reverseMaxOutput;
+      }
+
+      m_motor.setControl(m_dutyCycle.withOutput(output));
       //m_motor.setControl(m_voltagePosition.withPosition(m_setpoint));
     }else{
       m_motor.setControl(m_brake);
@@ -163,7 +185,12 @@ public class PivotSubsystem extends SubsystemBase {
     m_setpoint = PhoenixUnits.getDegreesToRotations(_setpoint);
     m_PID.setSetpoint(PhoenixUnits.getDegreesToRotations(_setpoint));
   }
-
+  public double getSetpoint(){
+    return m_setpoint;
+  }
+  public double getMeasurmentInDegrees(){
+    return PhoenixUnits.getRotationsToDegrees(getMeasurment());
+  }
 
   public boolean atSetpoint(){
     //return ShooterPivot.PIVOT_PID_UTIL.atSetpoint(m_encoder.getPosition().getValueAsDouble(), m_setpoint);
@@ -182,6 +209,9 @@ public class PivotSubsystem extends SubsystemBase {
     return m_interpolation.interpolate(_distance);
   }
 
+  public boolean IsEnabled(){
+    return m_pidEnabled;
+  }
   private void setTableValues(){
     m_points.add(new Point(116.1,52.8));
     m_points.add(new Point(164.1, 47.4));

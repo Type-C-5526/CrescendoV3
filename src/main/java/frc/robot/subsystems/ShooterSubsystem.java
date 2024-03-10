@@ -83,6 +83,16 @@ public class ShooterSubsystem extends SubsystemBase {
     return Constants.Shooter.pidConstants.atSetpoint(m_motor1.getVelocity().getValueAsDouble(), m_setpoint);
   }
 
+  public double getShooterVelocity(){
+    return m_motor1.getVelocity().getValueAsDouble();
+  }
+  public double getSetpoint(){
+    return m_setpoint;
+  }
+  public boolean isEnabled(){
+    return m_enabled;
+  }
+
   public static ShooterSubsystem getInstance(){
     if(m_instance == null){
       m_instance = new ShooterSubsystem();

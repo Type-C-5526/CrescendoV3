@@ -8,6 +8,7 @@ import java.util.Random;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,10 @@ import frc.robot.subsystems.Superstructure.RobotStatus;
 public class LEDSubsystem extends SubsystemBase {
   private AddressableLED m_leds;
   private AddressableLEDBuffer m_ledsbuffer;
+  private boolean m_hasToRepeat = false;
+  private int m_reapeatCounter = 0;
+  private int m_timesToRepeat = 0;
+  private RobotStatus m_StatusToRepeat;
 
   Random random = new Random();
 
@@ -46,46 +51,19 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-   
-    switch (Superstructure.getRobotStatus()){
-      case AIMED:
-        
-        break;
-      case AIMING:
 
-        break;
-      case HOME:
-
-
-        break;
-
-      case ALIGNING_TO_AMP:
-
-        break;
-
-      case ELEVATING:
-
-        break;
-
-      case PICKING_FROM_FLOOR:
-
-        break;
-
-      case PICKING_FROM_SOURCE:
-
-        break;
-
-      case SCORING_IN_AMP:
-
-        break;
-
-      case SHOOTING:
-
-        break;
-      default:
-
-        break;
+    if(m_hasToRepeat && m_reapeatCounter < m_timesToRepeat){
+      m_reapeatCounter++;
+      assignLedStatus(m_StatusToRepeat);
     }
+    else {
+      m_hasToRepeat = false;
+      m_reapeatCounter = 0;
+      m_timesToRepeat = 0;
+      assignLedStatus(Superstructure.getRobotStatus());
+    }
+
+   
 
      m_leds.setData(m_ledsbuffer);
       
@@ -120,18 +98,18 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void epilepticAttack(Color color){
-    if(m_timer.get() < 0.05){
+    if(m_timer.get() < 0.025){
       for (int i = 0; i < m_ledsbuffer.getLength(); i++) {  
         m_ledsbuffer.setLED(i, color);
       }
     }
-    else if(m_timer.get() > 0.1){
+    else if(m_timer.get() > 0.05){
       for (int i = 0; i < m_ledsbuffer.getLength(); i++) {  
         m_ledsbuffer.setLED(i, Color.kBlack);
       }
     }
 
-    if(m_timer.get() > 0.2){
+    if(m_timer.get() > 0.1){
       m_timer.reset();
       m_timer.start();
     }
@@ -201,6 +179,53 @@ public class LEDSubsystem extends SubsystemBase {
         m_ledsbuffer.setLED(pixel, new Color(255, heatRamp, 0));
     } else { // coolest
         m_ledsbuffer.setLED(pixel, new Color(heatRamp, 0, 0));
+    }
+  }
+
+  public void assignLedStatus(RobotStatus _status){
+     switch (_status){
+      case AIMED:
+        blink(Color.kAqua);
+        break;
+      case AIMING:
+
+        break;
+      case HOME:
+        solid(Color.kWhite);
+        break;
+
+      case ALIGNING_TO_AMP:
+
+        break;
+
+      case ELEVATING:
+
+        break;
+
+      case PICKING_FROM_FLOOR:
+
+        break;
+
+      case PICKING_FROM_SOURCE:
+
+        break;
+
+      case SCORING_IN_AMP:
+
+        break;
+
+      case SHOOTING:
+
+        break;
+      case HAS_GAME_PIECE:
+        m_hasToRepeat = true;
+        m_timesToRepeat = 100;
+        m_StatusToRepeat = RobotStatus.HAS_GAME_PIECE;
+        epilepticAttack(Color.kGreen);
+        break;
+      default:
+
+        break;
     }
   }
 

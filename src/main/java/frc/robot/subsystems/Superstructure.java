@@ -11,7 +11,8 @@ public class Superstructure {
         HOME,
         ELEVATING,
         SCORING_IN_AMP,
-        ALIGNING_TO_AMP
+        ALIGNING_TO_AMP,
+        HAS_GAME_PIECE
     }
 
     public static RobotStatus getRobotStatus(){
