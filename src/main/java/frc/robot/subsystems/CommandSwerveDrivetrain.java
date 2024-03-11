@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -190,30 +191,38 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
             double heading = this.getState().Pose.getRotation().getDegrees();
 
+            SmartDashboard.putNumber("Robot Heading", heading);
+
             Vector headingVector = new Vector(1, heading, true); //Is blue does nothing
             double angleBetweenVectors = Vector.getAngleBetweenVectors(headingVector, sourceVector);
+
+            SmartDashboard.putNumber("Angle Between Vectors: ", angleBetweenVectors);
 
             if (heading < 0) {
                 heading += 360;
             }
 
-            double difference;
+            double differenceToApply;
+
+            double differenceFromSourceTo0Degrees = 360 - sourceVector.getAngle();
+            heading += differenceFromSourceTo0Degrees;
+
+            if (heading > 360) {
+                heading = heading - 360;
+            }
+
+            if(heading <= 180){
+                differenceToApply = angleBetweenVectors;
+            }else{
+                differenceToApply = -angleBetweenVectors;
+            }
 
             m_PIDHeading.setSetpoint(0);
 
-            double angleChecker = Math.abs(angleBetweenVectors) + Math.abs(sourceVector.getAngle());
 
-            if(angleChecker > 360){
-                angleChecker -= 360;
-            }
-
-            if (((angleChecker) - Math.abs(headingVector.getAngle()) > 1)) {
-                difference = -angleBetweenVectors;
-            }else {
-                difference = angleBetweenVectors;
-            }
+            SmartDashboard.putNumber("Difference Applied: ", differenceToApply);
             
-            return m_PIDHeading.calculate(difference);
+            return m_PIDHeading.calculate(differenceToApply);
         };
     }
 
