@@ -8,7 +8,8 @@ import java.util.Random;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,6 +23,7 @@ public class LEDSubsystem extends SubsystemBase {
   private int m_reapeatCounter = 0;
   private int m_timesToRepeat = 0;
   private RobotStatus m_StatusToRepeat;
+  private boolean m_hasAppliedAllianceColor;
 
   Random random = new Random();
 
@@ -51,6 +53,29 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_hasAppliedAllianceColor = false;
+
+    if (DriverStation.isDisabled()) {
+      DriverStation.getAlliance().ifPresent((allianceColor) -> {
+
+          if(allianceColor == Alliance.Red){
+            blink(Color.kRed);
+          }else if(allianceColor == Alliance.Blue){
+            blink(Color.kBlue);
+          }
+
+          m_leds.setData(m_ledsbuffer);
+          m_hasAppliedAllianceColor = true;
+      });
+
+      if(m_hasAppliedAllianceColor){
+        return;
+      }else{
+        blink(Color.kYellow);
+        m_leds.setData(m_ledsbuffer);
+        return;
+      }
+    }
 
     if(m_hasToRepeat && m_reapeatCounter < m_timesToRepeat){
       m_reapeatCounter++;
