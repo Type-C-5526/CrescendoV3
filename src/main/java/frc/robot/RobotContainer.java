@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.ConveyorIn;
-import frc.robot.commands.DriveWithLockedHeading;
 import frc.robot.commands.FeedFromSource;
 import frc.robot.commands.LeaveAmp;
 import frc.robot.commands.Shoot;
@@ -52,6 +51,11 @@ public class RobotContainer {
       .withDeadband(MaxSpeed * 0.2).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
+
+  private final SwerveRequest.FieldCentric driveWithoutRotationalDeadband = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.2)
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
+                                                               // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -75,14 +79,23 @@ public class RobotContainer {
         ).ignoringDisable(true));
 
     driver.leftBumper().whileTrue(drivetrain.applyRequest(() -> brake));
+
+    driver.x().whileTrue(
+      drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(drivetrain.getHeadingToApply().getAsDouble()) // Drive counterclockwise with negative X (left)
+        ).ignoringDisable(true));
     
+    /* 
     driver.x().whileTrue(new DriveWithLockedHeading(
       () -> drivetrain.getState().Pose, 
       () -> driver.getLeftY(), 
       () -> driver.getLeftX(), 
       drive, 
       MaxAngularRate, 
-      MaxSpeed));
+      MaxSpeed));*/
+
     //joystick.a().whileTrue(new LeaveAmp());
     
     //joystick.b().whileTrue(drivetrain
