@@ -75,7 +75,7 @@ public class AutoAim extends Command {
         if (allianceColor == Alliance.Blue) {
           isBlue = true;
         }else if (allianceColor == Alliance.Red) {
-          isBlue = true; //TODO CHANGE isBlue to False
+          isBlue = false; 
         }
     });
 
