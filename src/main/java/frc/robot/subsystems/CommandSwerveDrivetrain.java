@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -16,17 +17,18 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+import frc.robot.math.Vector;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -86,9 +88,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /* Change this to the sysid routine you want to test */
     private final SysIdRoutine RoutineToApply = SysIdRoutineTranslation;
 
+    private PIDController m_PIDHeading;
+
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         configurePathPlanner();
+
+        //m_PIDHeading = new PIDController(0.02, 0, 0.001);
+
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -96,6 +103,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+
+        m_PIDHeading = new PIDController(0.035, 0, 0.001);
+        m_PIDHeading.setTolerance(0);
+
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -159,6 +170,51 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    public DoubleSupplier getHeadingToApply(){
+        return () -> {
+            var alliance = DriverStation.getAlliance();
+
+            Vector sourceVector;
+
+            if (alliance.isPresent()) {
+                if (alliance.get() == DriverStation.Alliance.Red) {
+                    sourceVector = new Vector(1, 170, true);
+                }else{
+                    sourceVector = new Vector(1, 340, true);
+                }
+            }else{
+                sourceVector = new Vector(1, 0, true);
+            }
+
+            double heading = this.getState().Pose.getRotation().getDegrees();
+
+            Vector headingVector = new Vector(1, heading, true); //Is blue does nothing
+            double angleBetweenVectors = Vector.getAngleBetweenVectors(headingVector, sourceVector);
+
+            if (heading < 0) {
+                heading += 360;
+            }
+
+            double difference;
+
+            m_PIDHeading.setSetpoint(0);
+
+            double angleChecker = Math.abs(angleBetweenVectors) + Math.abs(sourceVector.getAngle());
+
+            if(angleChecker > 360){
+                angleChecker -= 360;
+            }
+
+            if (((angleChecker) - Math.abs(headingVector.getAngle()) > 1)) {
+                difference = -angleBetweenVectors;
+            }else {
+                difference = angleBetweenVectors;
+            }
+            
+            return m_PIDHeading.calculate(difference);
+        };
     }
 
     @Override
