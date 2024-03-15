@@ -4,16 +4,19 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class DeployIntake extends Command {
   /** Creates a new DeployIntake. */
+  private Timer m_timer;
   private IntakeSubsystem m_intake;
   public DeployIntake() {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = IntakeSubsystem.getInstance();
+    m_timer = new Timer();
   }
 
   // Called when the command is initially scheduled.
@@ -21,13 +24,16 @@ public class DeployIntake extends Command {
   public void initialize() {
     m_intake.setSetpointAsPercent(100);
     m_intake.enableMotorPID();
+
+    m_timer.reset();
+    m_timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    if(m_intake.atSetpoint()){
+    if(m_timer.get() > 0.8){
       m_intake.setSpeed(1);
     }
   }

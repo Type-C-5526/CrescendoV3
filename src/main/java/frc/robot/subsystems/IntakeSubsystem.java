@@ -43,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     TalonFXConfiguration m_configs = new TalonFXConfiguration();
     m_IntakeMotor.getConfigurator().apply(m_configs);
-    
+
     m_rackMotor = new CANSparkMax(Constants.Intake.RACK_MOTOR_ID, MotorType.kBrushless);
 
     m_setpoint = 0;
@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
     m_pidController = new PIDController(Constants.Intake.TurretPIDConstants.getP(), Constants.Intake.TurretPIDConstants.getI(), Constants.Intake.TurretPIDConstants.getD());
-    m_pidController.setTolerance(50);
+    m_pidController.setTolerance(10);
 
     m_rackMotor.restoreFactoryDefaults();
     m_rackMotor.setIdleMode(IdleMode.kBrake);
