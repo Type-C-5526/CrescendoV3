@@ -4,18 +4,26 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.Superstructure.RobotStatus;
 
 public class LeaveAmp extends Command {
   private PivotSubsystem m_PivotSubsystem = PivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
   private TurretSubsystem m_turret = TurretSubsystem.getInstance();
+  private BooleanSupplier m_readyToRelease;
+  private ConveyorBelt m_conveyor = ConveyorBelt.getInstance();
+  private ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
 
   private Supplier<Pose2d> m_poseSupplier;
   /** Creates a new HalfExtensionElevator. */
@@ -33,6 +41,11 @@ public class LeaveAmp extends Command {
   public void initialize() {
     m_PivotSubsystem.setSetpointInDegrees(-21);
     m_PivotSubsystem.enablePID();
+
+    m_shooter.setSetpoint(-40);
+    m_shooter.enableMotorPID();
+
+    Superstructure.setRobotStatus(RobotStatus.LEAVING_IN_AMP);
     
   }
 
@@ -42,7 +55,9 @@ public class LeaveAmp extends Command {
     Pose2d pose = m_poseSupplier.get();
     double heading = pose.getRotation().getDegrees();
 
-    
+    if(heading < 0){
+      heading += 360;
+    }
 
 
     if(m_PivotSubsystem.atSetpoint()){ 
@@ -51,13 +66,15 @@ public class LeaveAmp extends Command {
 
     if(m_Elevator.atSetpoint()){
       if(heading > 90 && heading < 270){
-      m_turret.setSetpoint(90);
+        m_turret.setSetpoint(90);
       }
       else{
-      m_turret.setSetpoint(-90);
+        m_turret.setSetpoint(-90);
       }
       m_turret.enableTurretPID();
     }
+
+  
   }
 
   }

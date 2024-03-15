@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 
@@ -19,8 +20,7 @@ public class ConveyorBelt extends SubsystemBase {
 
   private DigitalInput m_colorSensor;
 
-  private CANSparkMax m_motor1;
-  private SparkPIDController m_pidController;
+  private TalonFX m_motor1;
 
   private static ConveyorBelt m_instance;
   private double m_MotorOutput;
@@ -29,15 +29,8 @@ public class ConveyorBelt extends SubsystemBase {
   public ConveyorBelt() {
     m_enabled = false;
 
-    m_motor1 = new CANSparkMax(Constants.Conveyor.MotorID, MotorType.kBrushless);
-    m_motor1.restoreFactoryDefaults();
+    m_motor1 = new TalonFX(Constants.Conveyor.MotorID);
 
-    m_pidController = m_motor1.getPIDController();
-
-    m_pidController.setP(Constants.Conveyor.ConveyorPIDConstants.getP());
-    m_pidController.setI(Constants.Conveyor.ConveyorPIDConstants.getI());
-    m_pidController.setD(Constants.Conveyor.ConveyorPIDConstants.getD());
-    m_pidController.setOutputRange(-1, 1);
 
     m_colorSensor = new DigitalInput(Constants.Conveyor.ColorSensorChannel);
 
@@ -78,8 +71,9 @@ public class ConveyorBelt extends SubsystemBase {
     }
 
   }
+
   public double getVelocity(){
-    return m_motor1.getEncoder().getVelocity();
+    return m_motor1.getVelocity().getValueAsDouble();
   }
 
   public void setSetpoint(double _Setpoint){

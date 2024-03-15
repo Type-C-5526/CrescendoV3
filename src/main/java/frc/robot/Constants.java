@@ -111,10 +111,18 @@ public class Constants {
 
 
      public static final class Conveyor {
-        public static final int MotorID = 14;
+        public static final int MotorID = 23;
         public static final int ColorSensorChannel = 2;
     
         public static final PIDUtil ConveyorPIDConstants = new PIDUtil(0.145,0,0,1);
+
+
+    }
+
+     public static final class Intake {
+        public static final int INTAKE_MOTOR_ID = 31;
+        public static final int RACK_MOTOR_ID = 17;
+         public static final PIDUtil TurretPIDConstants = new PIDUtil(0.5,0,0,1);
 
 
     }

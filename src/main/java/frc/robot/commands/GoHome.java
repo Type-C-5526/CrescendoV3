@@ -50,9 +50,12 @@ public class GoHome extends Command {
   public void execute() {
     if(m_Turret.isAtSetpoint()){
       if(!m_conveyor.hasGamePiece()){
-      m_Pivot.setSetpointInDegrees(-10);
+        m_Pivot.setSetpointInDegrees(-10);
       }
-      m_Elevator.disableMotorPID();
+      if(Superstructure.getRobotStatus() == RobotStatus.LEAVING_IN_AMP){
+        m_Elevator.setSetpointAsPercent(20);
+        m_Elevator.enableMotorPID();
+      }
     }
   }
 

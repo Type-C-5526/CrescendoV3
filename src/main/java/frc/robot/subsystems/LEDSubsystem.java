@@ -61,6 +61,7 @@ public class LEDSubsystem extends SubsystemBase {
           if(allianceColor == Alliance.Red){
             blink(Color.kRed);
           }else if(allianceColor == Alliance.Blue){
+            
             blink(Color.kBlue);
           }
 
@@ -71,7 +72,8 @@ public class LEDSubsystem extends SubsystemBase {
       if(m_hasAppliedAllianceColor){
         return;
       }else{
-        blink(Color.kYellow);
+        ascendingAnimation(Color.kAliceBlue);
+       //blink(Color.kYellow);
         m_leds.setData(m_ledsbuffer);
         return;
       }
@@ -99,9 +101,35 @@ public class LEDSubsystem extends SubsystemBase {
       m_ledsbuffer.setLED(i, color);
     }
   }
-  public void Ascend(Color color) {
-  
+
+    public void ascendingAnimation(Color color) {
+    double elapsedTime = m_timer.get();
+    double duration = 0.8; // Total duration of the animation
+
+    // Calculate the ratio of elapsed time to duration
+    double ratio = (elapsedTime % duration) / duration;
+
+    // Calculate the number of LEDs to light up based on the ratio
+    int numLedsLit = (int) (ratio * m_ledsbuffer.getLength());
+
+    // Set LEDs to the specified color up to numLedsLit
+    for (int i = 0; i < numLedsLit; i++) {
+        m_ledsbuffer.setLED(i, color);
+    }
+
+    // Set the rest of the LEDs to black
+    for (int i = numLedsLit; i < m_ledsbuffer.getLength(); i++) {
+        m_ledsbuffer.setLED(i, Color.kBlack);
+    }
+
+    if (elapsedTime > duration) {
+        m_timer.reset();
+        m_timer.start();
+    }
   }
+
+
+
 
   public void blink(Color color){
     if(m_timer.get() < 0.1){
@@ -219,7 +247,8 @@ public class LEDSubsystem extends SubsystemBase {
         solid(Color.kWhite);
         break;
 
-      case ALIGNING_TO_AMP:
+      case LEAVING_IN_AMP:
+      
 
         break;
 

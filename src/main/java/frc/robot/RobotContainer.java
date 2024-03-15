@@ -13,9 +13,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.Intake;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.ConveyorIn;
+import frc.robot.commands.DeployIntake;
 import frc.robot.commands.FeedFromSource;
 import frc.robot.commands.LeaveAmp;
 import frc.robot.commands.Shoot;
@@ -37,6 +40,7 @@ public class RobotContainer {
   private LEDSubsystem m_ledSubsystem = LEDSubsystem.getInstance();
   private ConveyorBelt m_conveyorBelt = ConveyorBelt.getInstance();
   private VisionSubsystem m_vision = VisionSubsystem.getInstance();
+  private IntakeSubsystem m_intake = IntakeSubsystem.getInstance();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -78,46 +82,37 @@ public class RobotContainer {
             .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
-    driver.leftBumper().whileTrue(drivetrain.applyRequest(() -> brake));
+    driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+
+
+
+    new Trigger(() -> driver.getLeftTriggerAxis() > 0.5).whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(-(driver.getLeftY() * MaxSpeed) / 5) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY((-driver.getLeftX() * MaxSpeed) / 5) // Drive left with negative X (left)
+            .withRotationalRate((-driver.getRightX() * MaxAngularRate) / 5) // Drive counterclockwise with negative X (left)
+        ).ignoringDisable(true));
 
     driver.x().whileTrue(
       drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(drivetrain.getHeadingToApply().getAsDouble()) // Drive counterclockwise with negative X (left)
+            .withRotationalRate(drivetrain.getHeadingToApply(false).getAsDouble()) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
     
-    /* 
-    driver.x().whileTrue(new DriveWithLockedHeading(
-      () -> drivetrain.getState().Pose, 
-      () -> driver.getLeftY(), 
-      () -> driver.getLeftX(), 
-      drive, 
-      MaxAngularRate, 
-      MaxSpeed));*/
-
-    //joystick.a().whileTrue(new LeaveAmp());
-    
-    //joystick.b().whileTrue(drivetrain
-    //      .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
     
 
-    //joystick.a().whileTrue(new ShootTest());
     // reset the field-centric heading on left bumper press
-    driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    drivetrain.seedFieldRelative(new Pose2d(new Translation2d(1.32,5.53), new Rotation2d()));
+    drivetrain.seedFieldRelative(new Pose2d(new Translation2d(1.32,5.53), new Rotation2d()));  //TODO: Remove Initial Position
 
     driver.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
     driver.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
 
     //driver.a().whileTrue(new LeaveAmp());
-    driver.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
-    driver.y().whileTrue(new FeedFromSource());
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
@@ -127,11 +122,23 @@ public class RobotContainer {
     joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));*/
 
+    operator.leftBumper().whileTrue(new DeployIntake());
+    //operator.leftBumper().onTrue(new InstantCommand(() -> m_intake.setSpeed(1)));
 
-    driver.rightBumper().whileTrue(new Shoot());
-    operator.y().whileTrue(new ConveyorIn());
+
+    operator.rightBumper().whileTrue(new Shoot());   
+    operator.y().whileTrue(new FeedFromSource());
     operator.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
-    operator.leftBumper().whileTrue(new FeedFromSource());
+    operator.x().whileTrue(new LeaveAmp(() -> drivetrain.getState().Pose));
+    operator.x().whileTrue(
+      drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(drivetrain.getHeadingToApply(true).getAsDouble()) // Drive counterclockwise with negative X (left)
+        ).ignoringDisable(true));
+
+
+
   }
 
   public RobotContainer() {

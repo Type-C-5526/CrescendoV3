@@ -173,23 +173,40 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
-    public DoubleSupplier getHeadingToApply(){
+    public DoubleSupplier getHeadingToApply(boolean isForAmp){
         return () -> {
             var alliance = DriverStation.getAlliance();
+            double heading = this.getState().Pose.getRotation().getDegrees();
+
+            if (heading < 0) {
+                heading += 360;
+            }
 
             Vector sourceVector;
 
-            if (alliance.isPresent()) {
-                if (alliance.get() == DriverStation.Alliance.Red) {
-                    sourceVector = new Vector(1, 170, true);
-                }else{
-                    sourceVector = new Vector(1, 340, true);
+           
+            if(isForAmp){
+                if(heading > 90 && heading <= 270){
+                    sourceVector = new Vector(1, 180, true);
                 }
-            }else{
-                sourceVector = new Vector(1, 0, true);
+                else {
+                    sourceVector = new Vector(1, 0, true);
+                }
+            }
+            else{
+                if (alliance.isPresent()) {
+                    if (alliance.get() == DriverStation.Alliance.Red) {
+                        sourceVector = new Vector(1, 170, true);
+                    }else{
+                        sourceVector = new Vector(1, 340, true);
+                    }
+                }else{
+                    sourceVector = new Vector(1, 0, true);
+                }
+
             }
 
-            double heading = this.getState().Pose.getRotation().getDegrees();
+            
 
             SmartDashboard.putNumber("Robot Heading", heading);
 
@@ -198,9 +215,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
             SmartDashboard.putNumber("Angle Between Vectors: ", angleBetweenVectors);
 
-            if (heading < 0) {
-                heading += 360;
-            }
+            
 
             double differenceToApply;
 
