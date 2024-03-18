@@ -28,7 +28,7 @@ public class FeedFromSource extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_pivot.setSetpointInDegrees(30);
+    m_pivot.setSetpointInDegrees(27);
     m_pivot.enablePID();
 
    
@@ -39,7 +39,7 @@ public class FeedFromSource extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_pivot.getMeasurment() > -20){
+    if(m_pivot.getMeasurment() > -15){
      m_shooter.setSetpoint(80);
     m_shooter.enableMotorPID();
     }
@@ -50,7 +50,7 @@ public class FeedFromSource extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_conveyor.setMotorVelocity(0.1);
+    m_conveyor.setMotorVelocity(-0.1);
 
     new GoHome().schedule();
 

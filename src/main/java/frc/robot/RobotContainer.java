@@ -82,11 +82,12 @@ public class RobotContainer {
             .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
-    driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        
+   driver.a().whileTrue(drivetrain.applyRequest(() -> brake)); 
+   
 
 
-
-    new Trigger(() -> driver.getLeftTriggerAxis() > 0.5).whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(-(driver.getLeftY() * MaxSpeed) / 5) // Drive forward with
+     new Trigger(() -> driver.getLeftTriggerAxis() > 0.5).whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(-(driver.getLeftY() * MaxSpeed) / 5) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY((-driver.getLeftX() * MaxSpeed) / 5) // Drive left with negative X (left)
             .withRotationalRate((-driver.getRightX() * MaxAngularRate) / 5) // Drive counterclockwise with negative X (left)
@@ -102,6 +103,7 @@ public class RobotContainer {
     
 
     // reset the field-centric heading on left bumper press
+    
     driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     drivetrain.registerTelemetry(logger::telemeterize);
@@ -116,19 +118,21 @@ public class RobotContainer {
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-
-    /*joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));*/
-
+/* 
+    driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+*/
     operator.leftBumper().whileTrue(new DeployIntake());
     //operator.leftBumper().onTrue(new InstantCommand(() -> m_intake.setSpeed(1)));
 
-
+    //driver.a().whileTrue(new ShootTest());
+    //driver.y().whileTrue(new ConveyorIn());
+     
     operator.rightBumper().whileTrue(new Shoot());   
     operator.y().whileTrue(new FeedFromSource());
-    operator.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose));
+    operator.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose)); 
     operator.x().whileTrue(new LeaveAmp(() -> drivetrain.getState().Pose));
     operator.x().whileTrue(
       drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
@@ -137,6 +141,8 @@ public class RobotContainer {
             .withRotationalRate(drivetrain.getHeadingToApply(true).getAsDouble()) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
+    operator.b().onTrue(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-1)));
+    operator.b().onFalse(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-0.2)));
 
 
   }

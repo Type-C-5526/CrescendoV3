@@ -35,11 +35,11 @@ public class Constants {
         public static final int CANCODER_ID = 19;
         public static final String CANCODER_CANBUS = "rio";
 
-        public static final PIDUtil PIVOT_PID_UTIL = new PIDUtil(100,0,0,PhoenixUnits.getDegreesToRotations(2));
+        public static final PIDUtil PIVOT_PID_UTIL = new PIDUtil(150,0,0,PhoenixUnits.getDegreesToRotations(2));
 
         //public static final double MAGNET_OFFSET = -0.382080;
         //public static final double MAGNET_OFFSET = -0.762207;
-        public static final double MAGNET_OFFSET = -0.439697;
+        public static final double MAGNET_OFFSET = -0.353516;
 
         
 
@@ -91,7 +91,7 @@ public class Constants {
         public static final int MagneticSwitch2 = 1; 
 
 
-        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.3,0,0,1);
+        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.4,0,0,1);
 
 
     }
@@ -120,9 +120,9 @@ public class Constants {
     }
 
      public static final class Intake {
-        public static final int INTAKE_MOTOR_ID = 31;
+        public static final int INTAKE_MOTOR_ID = 24;
         public static final int RACK_MOTOR_ID = 17;
-         public static final PIDUtil TurretPIDConstants = new PIDUtil(0.5,0,0,1);
+         public static final PIDUtil TurretPIDConstants = new PIDUtil(0.6,0,0,1);
 
 
     }

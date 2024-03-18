@@ -39,7 +39,7 @@ public class LeaveAmp extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_PivotSubsystem.setSetpointInDegrees(-21);
+    m_PivotSubsystem.setSetpointInDegrees(-15);
     m_PivotSubsystem.enablePID();
 
     m_shooter.setSetpoint(-40);
@@ -66,10 +66,10 @@ public class LeaveAmp extends Command {
 
     if(m_Elevator.atSetpoint()){
       if(heading > 90 && heading < 270){
-        m_turret.setSetpoint(90);
+        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(90));
       }
       else{
-        m_turret.setSetpoint(-90);
+        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(-90));
       }
       m_turret.enableTurretPID();
     }
@@ -82,7 +82,7 @@ public class LeaveAmp extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    new GoHome().schedule();
+    new GoHomeFromAmp().schedule();
   }
 
   // Returns true when the command should end.

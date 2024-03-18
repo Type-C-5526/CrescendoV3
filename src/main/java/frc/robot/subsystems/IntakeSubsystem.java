@@ -28,8 +28,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean m_enabled;
   private RelativeEncoder m_encoder;
 
-  private double m_maxOutputForward = 0.2;
-  private double m_maxOutputReverse = -0.2;
+  private double m_maxOutputForward = 0.5;
+  private double m_maxOutputReverse = -0.5;
 
   private DutyCycleOut m_dutycycle = new DutyCycleOut(0);
 
@@ -95,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public void setSetpointAsPercent(double _Setpoint){
-    m_setpoint = _Setpoint * -2.6317;
+    m_setpoint = _Setpoint * -0.115;
     m_pidController.setSetpoint(m_setpoint);
   }
 

@@ -49,7 +49,15 @@ public class PivotSubsystem extends SubsystemBase {
   private double m_setpoint = 0;
 
   private List<Point> m_points;
+
+  private List<Point> m_points2;
+
+    private List<Point> m_points3;
+
+  private LinearInterpolation m_interpolation2;
   private LinearInterpolation m_interpolation;
+  private LinearInterpolation m_interpolation3;
+
 
   private final SlewRateLimiter m_filter;
   private double m_forwardMaxOutput = 0.5;
@@ -77,15 +85,23 @@ public class PivotSubsystem extends SubsystemBase {
   /** Creates a new ShooterPivotSubsystem. */
   public PivotSubsystem() {
     m_points = new ArrayList<>();
+    m_points2 = new ArrayList<>();
+    m_points3 = new ArrayList<>();
+
     setTableValues();
     m_interpolation = new LinearInterpolation(m_points);
+    m_interpolation2 = new LinearInterpolation(m_points2);
+    m_interpolation3 = new LinearInterpolation(m_points3);
+
+
+
 
     m_filter = new SlewRateLimiter(0.01);
     
 
 
-    m_PID = new PIDController(10, 0, 0);
-    m_PID.setTolerance(0.005);
+    m_PID = new PIDController(10.2, 0, 0);
+    m_PID.setTolerance(0.05);
     
 
     m_motor = new TalonFX(ShooterPivot.MOTOR_ID, ShooterPivot.MOTOR_CANBUS);
@@ -206,7 +222,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getPivotTargetAngle(double _distance){
-    return m_interpolation.interpolate(_distance);
+    return m_interpolation3.interpolate(_distance);
   }
 
   public boolean IsEnabled(){
@@ -219,14 +235,47 @@ public class PivotSubsystem extends SubsystemBase {
     m_points.add(new Point(262.1, 33.8));
     m_points.add(new Point(267.6, 32.85));
     m_points.add(new Point(293.1, 31.00));
-    m_points.add(new Point(329.1, 30.2));
-    m_points.add(new Point(379.6, 27.3));
-    m_points.add(new Point(460.1, 25.29));
-    m_points.add(new Point(498.1, 22.58));
-    m_points.add(new Point(554.1, 22.14));
-    m_points.add(new Point(611.1, 21.26));
-    
+    m_points.add(new Point(329.1, 28.2));
+    m_points.add(new Point(379.6, 26.8));
+    m_points.add(new Point(460.1, 23.29));
+    m_points.add(new Point(498.1, 21.58));
+    m_points.add(new Point(554.1, 21.14));
+    m_points.add(new Point(611.1, 20.26));
+
+    m_points2.add(new Point(155.1, 46.878));
+    m_points2.add(new Point(171.1, 41.044));
+    m_points2.add(new Point(192.1, 40.165));
+    m_points2.add(new Point(209.6, 37.089));
+    m_points2.add(new Point(235.1, 35.244));
+    m_points2.add(new Point(265.1, 31.816));
+    m_points2.add(new Point(298.1, 29.970));
+    m_points2.add(new Point(338.1, 26.191));
+    m_points2.add(new Point(365.1, 25.521));
+    m_points2.add(new Point(390.1, 23.994));
+    m_points2.add(new Point(416.1, 22.939));
+    m_points2.add(new Point(439.1, 22.1));
+    m_points2.add(new Point(478.1, 20.214));
+    m_points2.add(new Point(520.1, 19.599));
+    m_points2.add(new Point(570.1, 19.863));
+
+    m_points3.add(new Point(116.1,49.8));
+    m_points3.add(new Point(164.1, 44.4));
+    m_points3.add(new Point(194.6, 37.1));
+    m_points3.add(new Point(262.1, 33.8));
+    m_points3.add(new Point(267.6, 32.85));
+    m_points3.add(new Point(298.1, 29.970));
+    m_points3.add(new Point(338.1, 26.191));
+    m_points3.add(new Point(365.1, 25.521));
+    m_points3.add(new Point(390.1, 23.994));
+    m_points3.add(new Point(416.1, 22.939));
+    m_points3.add(new Point(439.1, 22.1));
+    m_points3.add(new Point(478.1, 20.214));
+    m_points3.add(new Point(520.1, 19.599));
+    m_points3.add(new Point(570.1, 19.863));
+
+        
     }
+
 
 
   public static PivotSubsystem getInstance(){

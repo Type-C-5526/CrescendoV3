@@ -238,17 +238,18 @@ public class LEDSubsystem extends SubsystemBase {
   public void assignLedStatus(RobotStatus _status){
      switch (_status){
       case AIMED:
-        blink(Color.kAqua);
+        epilepticAttack(Color.kYellow);
         break;
       case AIMING:
+      solid(Color.kYellow);
 
         break;
       case HOME:
-        solid(Color.kWhite);
+        solid(Color.kPurple);
         break;
 
       case LEAVING_IN_AMP:
-      
+      ascendingAnimation(Color.kOrange);
 
         break;
 
@@ -257,25 +258,31 @@ public class LEDSubsystem extends SubsystemBase {
         break;
 
       case PICKING_FROM_FLOOR:
-
+        solid(Color.kGreen);
         break;
 
       case PICKING_FROM_SOURCE:
-
+        solid(Color.kGreen);
         break;
 
       case SCORING_IN_AMP:
-
+        epilepticAttack(Color.kOrange);
         break;
 
       case SHOOTING:
-
+      
         break;
       case HAS_GAME_PIECE:
         m_hasToRepeat = true;
         m_timesToRepeat = 100;
         m_StatusToRepeat = RobotStatus.HAS_GAME_PIECE;
         epilepticAttack(Color.kGreen);
+        break;
+      case CANT_AIM:
+        m_hasToRepeat = true;
+        m_timesToRepeat = 60;
+        m_StatusToRepeat = RobotStatus.CANT_AIM;
+        epilepticAttack(Color.kRed);
         break;
       default:
 

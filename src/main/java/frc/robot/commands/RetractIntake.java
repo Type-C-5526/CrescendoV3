@@ -4,31 +4,40 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ConveyorBelt;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 
-public class Shoot extends Command {
-  /** Creates a new Shoot. */
-  private ShooterSubsystem m_shooter;
-  private ConveyorBelt m_conveyor;
+public class RetractIntake extends Command {
+  /** Creates a new RetractIntake. */
+  private IntakeSubsystem m_intake;
   private PivotSubsystem m_pivot;
-
-  public Shoot() {
+  private ShooterSubsystem m_shooter;
+  private Timer m_timer;
+  public RetractIntake() {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_conveyor = ConveyorBelt.getInstance();
-    m_shooter = ShooterSubsystem.getInstance();
+    m_intake = IntakeSubsystem.getInstance();
     m_pivot = PivotSubsystem.getInstance();
+    m_shooter = ShooterSubsystem.getInstance();
+    
+    m_timer = new Timer();
+    m_timer.reset();
+    m_timer.start();
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
-    
+    m_pivot.setSetpointInDegrees(-15);
+    m_pivot.enablePID();
+    m_shooter.disableMotorPID();
+    m_intake.setSpeed(0);
+
 
   }
 
@@ -36,22 +45,20 @@ public class Shoot extends Command {
   @Override
   public void execute() {
 
-    if(Superstructure.getRobotStatus() == RobotStatus.AIMED){
-
-      m_conveyor.setMotorVelocity(1);
+    if(m_pivot.atSetpoint()){
+      m_intake.setSetpointAsPercent(0);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      m_conveyor.setMotorVelocity(0);
-      m_shooter.disableMotorPID();
+    Superstructure.setRobotStatus(RobotStatus.HOME);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_intake.atSetpoint() || m_timer.get() > 2;
   }
 }

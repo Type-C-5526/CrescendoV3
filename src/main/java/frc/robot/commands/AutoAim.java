@@ -151,13 +151,20 @@ public class AutoAim extends Command {
       turretSetpoint = angleBetweenVectors * -1;
     }
 
+    if(turretSetpoint > 90){
+      turretSetpoint = -(turretSetpoint - 90);
+    }else if(turretSetpoint < -90){
+      turretSetpoint = -(turretSetpoint + 90);
+    }
+
+    /* 
     if(turretSetpoint > 90 || turretSetpoint < -90){
       turretSetpoint = 0;
       canAim = false;
     }
     else {
       canAim = true;
-    }
+    }*/
 
     SmartDashboard.putNumber("Turret Supposed Setpoint: ", turretSetpoint);
     SmartDashboard.putBoolean("Is Blue:", isBlue);
@@ -195,12 +202,15 @@ public class AutoAim extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    if(!canAim){
+      Superstructure.setRobotStatus(RobotStatus.CANT_AIM);
+    }
     new GoHome().schedule();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !canAim;
   }
 }

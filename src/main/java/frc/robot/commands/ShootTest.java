@@ -31,7 +31,7 @@ public class ShootTest extends Command {
   @Override
   public void execute() {
     if(m_shooter.atSetpoint()){
-      m_conveyor.setMotorVelocity(-1);
+      m_conveyor.setMotorVelocity(1);
     }
 
   }

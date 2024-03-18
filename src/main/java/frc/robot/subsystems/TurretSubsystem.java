@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Turret;
+import frc.robot.subsystems.Superstructure.RobotStatus;
 
 public class TurretSubsystem extends SubsystemBase {
   /** Creates a new Turret. */
@@ -85,6 +86,12 @@ public class TurretSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     double output = m_pidController.calculate(getMeasurment());
     output = m_filter.calculate(output);
+
+    if (Superstructure.getRobotStatus() == RobotStatus.SCORING_IN_AMP) {
+      m_maxOutput = 0.3;
+    }else{
+      m_maxOutput = 0.5;
+    }
 
     SmartDashboard.putNumber("Turret Value: ", m_motor1.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Angle: ", getConvertedAngle(m_motor1.getEncoder().getPosition()));

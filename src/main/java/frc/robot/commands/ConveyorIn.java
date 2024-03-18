@@ -24,7 +24,7 @@ public class ConveyorIn extends Command {
   public void initialize() {
     m_shooter.setSetpoint(90);
     m_shooter.enableMotorPID();
-    m_conveyor.setMotorVelocity(1);
+    m_conveyor.setMotorVelocity(-1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +34,7 @@ public class ConveyorIn extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_conveyor.setMotorVelocity(0.1);
+    m_conveyor.setMotorVelocity(-0.1);
     m_shooter.disableMotorPID();
   }
 
