@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
 import frc.robot.math.Vector;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
@@ -28,6 +29,7 @@ public class AutoAim extends Command {
 
   private ShooterSubsystem m_shooter;
   private TurretSubsystem m_turret;
+  private ElevatorSubsystem m_elevator;
   
   
 
@@ -35,6 +37,8 @@ public class AutoAim extends Command {
   private double tolerance = 5.00;
 
   private boolean canAim;
+
+
   /** Creates a new AutoAim. */
   public AutoAim(Supplier<Pose2d> _poseSupplier) {
     m_poseSupplier = _poseSupplier;
@@ -43,8 +47,8 @@ public class AutoAim extends Command {
 
     m_shooter = ShooterSubsystem.getInstance();
     m_turret = TurretSubsystem.getInstance();
-
-  }
+    m_elevator = ElevatorSubsystem.getInstance();  
+    }
 
   // Called when the command is initially scheduled.
   @Override
@@ -101,21 +105,37 @@ public class AutoAim extends Command {
     if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() <= 0){
 
       angle = Math.abs(angle);
+      SmartDashboard.putBoolean("IS in c1",  true );    
+      SmartDashboard.putBoolean("IS in c2",  false );
+      SmartDashboard.putBoolean("IS in c3",  false );
+      SmartDashboard.putBoolean("IS in c4",  false );  
     }
     //C2
     else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() <= 0){
 
       angle = (90 - Math.abs(angle)) + 90;
+      SmartDashboard.putBoolean("IS in c1",  false );    
+      SmartDashboard.putBoolean("IS in c2",  true );
+      SmartDashboard.putBoolean("IS in c3",  false );
+      SmartDashboard.putBoolean("IS in c4",  false );
     }
     //C3
     else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() >= 0){
       angle = Math.abs(angle) + 180;
+      SmartDashboard.putBoolean("IS in c1",  false );    
+      SmartDashboard.putBoolean("IS in c2",  false );
+      SmartDashboard.putBoolean("IS in c3",  true );
+      SmartDashboard.putBoolean("IS in c4",  false );
 
     }
     //C4
     else if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() >= 0){
 
       angle = (90 - Math.abs(angle)) + 270;
+      SmartDashboard.putBoolean("IS in c1",  false );    
+      SmartDashboard.putBoolean("IS in c2",  false );
+      SmartDashboard.putBoolean("IS in c3",  false );
+      SmartDashboard.putBoolean("IS in c4",  true );
     }
 
     Vector vectorA = new Vector(1, heading, isBlue); //Is blue does nothing
@@ -148,10 +168,22 @@ public class AutoAim extends Command {
       turretSetpoint = angleBetweenVectors * -1;
     }
 
+    SmartDashboard.putNumber("Turret Setpoint VolteaDo", turretSetpoint);
     if(turretSetpoint > 90){
-      turretSetpoint = -(turretSetpoint - 90);
+      
+      turretSetpoint = (180 - turretSetpoint);
+      m_elevator.setSetpointAsPercent(20);
+      m_elevator.enableMotorPID();
+
+      SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
     }else if(turretSetpoint < -90){
-      turretSetpoint = -(turretSetpoint + 90);
+      turretSetpoint = (-180 - turretSetpoint);
+      m_elevator.setSetpointAsPercent(20);
+      m_elevator.enableMotorPID();
+      SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
+    }
+    else {
+      m_elevator.disableMotorPID();
     }
 
     /* 
@@ -191,9 +223,7 @@ public class AutoAim extends Command {
 
     
     TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
-    
-
-    
+    //m_turret.setSetpoint(0);
   }
 
   // Called once the command ends or is interrupted.
@@ -202,6 +232,8 @@ public class AutoAim extends Command {
     if(!canAim){
       Superstructure.setRobotStatus(RobotStatus.CANT_AIM);
     }
+    m_elevator.disableMotorPID();
+
     new GoHome().schedule();
   }
 

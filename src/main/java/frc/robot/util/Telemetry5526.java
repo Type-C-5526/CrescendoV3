@@ -114,16 +114,6 @@ public class Telemetry5526 extends SubsystemBase{
         m_ElevatorSetpoint.setDouble(m_elevator.getSetpoint());
 
 
-
-
-
-
-
-
-
-        
-
-
     }
 
 

@@ -105,7 +105,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
 
-        m_PIDHeading = new PIDController(0.035, 0, 0.001);
+        m_PIDHeading = new PIDController(0.04, 0, 0.001);
         m_PIDHeading.setTolerance(0);
 
         configurePathPlanner();

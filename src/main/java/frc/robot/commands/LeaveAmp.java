@@ -69,7 +69,10 @@ public class LeaveAmp extends Command {
       }
       m_turret.enableTurretPID();
     }
+    if(m_turret.isAtSetpoint()){
+    Superstructure.setRobotStatus(RobotStatus.AIMED);
 
+    }
   
   }
 

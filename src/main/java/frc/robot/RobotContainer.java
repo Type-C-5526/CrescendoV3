@@ -51,7 +51,7 @@ public class RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1); 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.2).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
 
@@ -102,11 +102,12 @@ public class RobotContainer {
     
 
     // reset the field-centric heading on left bumper press
-    
-    driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+    
 
+    driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+ 
     drivetrain.seedFieldRelative(new Pose2d(new Translation2d(1.32,5.53), new Rotation2d()));  //TODO: Remove Initial Position
 
     driver.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
