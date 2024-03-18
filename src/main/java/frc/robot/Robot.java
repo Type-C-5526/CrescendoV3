@@ -5,12 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.ShooterPivot;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.util.Telemetry5526;
 
 public class Robot extends TimedRobot {
@@ -19,7 +15,6 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   private Telemetry5526 m_telemetry;
 
-  private final boolean UseVision = true;
 
   @Override
   public void robotInit() {

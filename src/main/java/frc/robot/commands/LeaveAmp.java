@@ -4,12 +4,10 @@
 
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -21,8 +19,6 @@ public class LeaveAmp extends Command {
   private PivotSubsystem m_PivotSubsystem = PivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
   private TurretSubsystem m_turret = TurretSubsystem.getInstance();
-  private BooleanSupplier m_readyToRelease;
-  private ConveyorBelt m_conveyor = ConveyorBelt.getInstance();
   private ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
 
   private Supplier<Pose2d> m_poseSupplier;

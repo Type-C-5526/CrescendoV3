@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,19 +13,15 @@ import frc.robot.Constants;
 
 public class ConveyorBelt extends SubsystemBase {
   /** Creates a new ConveyorBelt. */
-  private boolean m_enabled;
 
   private DigitalInput m_colorSensor;
 
   private TalonFX m_motor1;
 
   private static ConveyorBelt m_instance;
-  private double m_MotorOutput;
-  private double m_setpoint;
   private double m_motorVelocity = 0;
   public ConveyorBelt() {
-    m_enabled = false;
-
+    
     m_motor1 = new TalonFX(Constants.Conveyor.MotorID);
 
 
@@ -41,12 +34,6 @@ public class ConveyorBelt extends SubsystemBase {
     m_motorVelocity = m_motor1.get();
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Holding Note:", m_colorSensor.get());
-    if(m_enabled){
-    //m_pidController.setReference(m_setpoint, CANSparkMax.ControlType.kPosition);
-    }
-    else {
-      //m_motor1.stopMotor();
-    }
 
 
   }
@@ -75,20 +62,6 @@ public class ConveyorBelt extends SubsystemBase {
   public double getVelocity(){
     return m_motor1.getVelocity().getValueAsDouble();
   }
-
-  public void setSetpoint(double _Setpoint){
-    m_setpoint = _Setpoint;
-  }
-
-  public void enableMotorPID(){
-    m_enabled = true;
-  }
-
-  public void disableMotorPID(){
-    m_enabled = false;
-  }
-
-
 
 
   public void setMotorVelocity(double _velocity){

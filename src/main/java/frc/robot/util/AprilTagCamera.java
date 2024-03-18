@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 
 /** Create a camera */
 public class AprilTagCamera {
-  private final double APRILTAG_POSE_AMBIGUITY_THRESHOLD = 0.2;
 
   private final PhotonCamera m_camera;
   private final Transform3d m_robotToCam;

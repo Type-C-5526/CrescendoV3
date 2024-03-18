@@ -11,7 +11,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +25,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TalonFXConfiguration m_motor1Configuration;
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
 
-  private PositionVoltage m_PositionVoltage;
   private double m_setpoint;
 
   private boolean m_enabled;
@@ -39,8 +37,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public ElevatorSubsystem() {
 
-    m_PositionVoltage = new PositionVoltage(0, 0, false, 0, 0, false, false, false);
-    
     m_setpoint = 0;
     m_enabled = false;
     m_break = new NeutralOut();

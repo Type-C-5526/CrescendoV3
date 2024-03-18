@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Intake;
 import frc.robot.commands.AutoAim;
-import frc.robot.commands.ConveyorIn;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.FeedFromSource;
 import frc.robot.commands.LeaveAmp;

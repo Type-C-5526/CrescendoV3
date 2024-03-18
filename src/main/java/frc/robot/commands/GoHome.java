@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -20,7 +19,6 @@ public class GoHome extends Command {
   private PivotSubsystem m_Pivot;
   private ShooterSubsystem m_Shooter;
   private TurretSubsystem m_Turret;
-  private ConveyorBelt m_conveyor;
   private Timer m_Timer;
 
   /** Creates a new GoHome. */
@@ -30,7 +28,6 @@ public class GoHome extends Command {
     m_Pivot = PivotSubsystem.getInstance();
     m_Shooter = ShooterSubsystem.getInstance();
     m_Turret = TurretSubsystem.getInstance();
-    m_conveyor = ConveyorBelt.getInstance();
     m_Timer = new Timer();
 
 
