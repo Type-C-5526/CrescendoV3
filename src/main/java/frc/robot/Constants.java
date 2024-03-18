@@ -91,7 +91,7 @@ public class Constants {
         public static final int MagneticSwitch2 = 1; 
 
 
-        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.4,0,0,1);
+        public static final PIDUtil TurretPIDConstants = new PIDUtil(0.25,0,0,1);
 
 
     }
@@ -134,7 +134,7 @@ public class Constants {
 
 
     public static final class Shooter {
-        public static final int talonFXShooterID = 34;
+        public static final int talonFXShooterID = 1;
         public static final int talonFXIDCL = 31;
         public static final int talonFXICR = 32; //TODO Change ID 
         public static final String canbus = "rio";

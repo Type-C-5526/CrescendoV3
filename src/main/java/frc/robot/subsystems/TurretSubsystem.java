@@ -87,8 +87,8 @@ public class TurretSubsystem extends SubsystemBase {
     double output = m_pidController.calculate(getMeasurment());
     output = m_filter.calculate(output);
 
-    if (Superstructure.getRobotStatus() == RobotStatus.SCORING_IN_AMP) {
-      m_maxOutput = 0.3;
+    if (Superstructure.getRobotStatus() == RobotStatus.LEAVING_IN_AMP) {
+      m_maxOutput = 0.25;
     }else{
       m_maxOutput = 0.5;
     }
