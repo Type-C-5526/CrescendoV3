@@ -8,7 +8,7 @@
         {
           "type": "named",
           "data": {
-            "name": "autoAim"
+            "name": "nearShotBack"
           }
         },
         {
@@ -84,6 +84,12 @@
           "type": "named",
           "data": {
             "name": "autoAim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "retractIntake"
           }
         }
       ]

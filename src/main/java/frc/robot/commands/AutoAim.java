@@ -40,6 +40,12 @@ public class AutoAim extends Command {
 
   private boolean canAim;
   private boolean shooted;
+  private boolean shootingBackwards;
+
+  public boolean isC1;
+  public boolean isC2;
+  public boolean isC3;
+  public boolean isC4;
 
 
   /** Creates a new AutoAim. */
@@ -72,9 +78,17 @@ public class AutoAim extends Command {
     m_turret.enableTurretPID();
 
     shooted = false;
+    shootingBackwards = false;
 
     m_timer.reset();
     m_timer.stop();
+
+    isC1 = false;
+    isC2 = false;
+    isC3 = false;
+    isC4 = false;
+
+    m_timer.start();
 
   }
 
@@ -115,38 +129,49 @@ public class AutoAim extends Command {
     if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() <= 0){
 
       angle = Math.abs(angle);
-      SmartDashboard.putBoolean("IS in c1",  true );    
-      SmartDashboard.putBoolean("IS in c2",  false );
-      SmartDashboard.putBoolean("IS in c3",  false );
-      SmartDashboard.putBoolean("IS in c4",  false );  
+
+      isC1 = true;
+      isC2 = false;
+      isC3 = false;
+      isC4 = false; 
     }
     //C2
     else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() <= 0){
 
+      isC1 = false;
+      isC2 = true;
+      isC3 = false;
+      isC4 = false;
+
       angle = (90 - Math.abs(angle)) + 90;
-      SmartDashboard.putBoolean("IS in c1",  false );    
-      SmartDashboard.putBoolean("IS in c2",  true );
-      SmartDashboard.putBoolean("IS in c3",  false );
-      SmartDashboard.putBoolean("IS in c4",  false );
     }
     //C3
     else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() >= 0){
+
+      isC1 = false;
+      isC2 = false;
+      isC3 = true;
+      isC4 = false;
+
       angle = Math.abs(angle) + 180;
-      SmartDashboard.putBoolean("IS in c1",  false );    
-      SmartDashboard.putBoolean("IS in c2",  false );
-      SmartDashboard.putBoolean("IS in c3",  true );
-      SmartDashboard.putBoolean("IS in c4",  false );
 
     }
     //C4
     else if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() >= 0){
 
+      isC1 = false;
+      isC2 = false;
+      isC3 = false;
+      isC4 = true;
+
       angle = (90 - Math.abs(angle)) + 270;
-      SmartDashboard.putBoolean("IS in c1",  false );    
-      SmartDashboard.putBoolean("IS in c2",  false );
-      SmartDashboard.putBoolean("IS in c3",  false );
-      SmartDashboard.putBoolean("IS in c4",  true );
+      
     }
+
+    SmartDashboard.putBoolean("IS in c1",  isC1 );    
+    SmartDashboard.putBoolean("IS in c2",  isC2 );
+    SmartDashboard.putBoolean("IS in c3",  isC3 );
+    SmartDashboard.putBoolean("IS in c4",  isC4 );
 
     Vector vectorA = new Vector(1, heading, isBlue); //Is blue does nothing
     Vector vectorB = new Vector(distance, angle, isBlue);
@@ -180,20 +205,37 @@ public class AutoAim extends Command {
 
     SmartDashboard.putNumber("Turret Setpoint VolteaDo", turretSetpoint);
     if(turretSetpoint > 90){
-      //turretSetpoint += 90;
-      turretSetpoint = -(180 - turretSetpoint);
-      m_elevator.setSetpointAsPercent(20);
-      //m_elevator.enableMotorPID();
 
-      SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
-    }else if(turretSetpoint < -90){
-      //turretSetpoint += 90;
-      turretSetpoint = -(-180 - turretSetpoint);
+      shootingBackwards = true;
+      if (isBlue) {
+        turretSetpoint = turretSetpoint - 180;
+        if (isC3) {
+          turretSetpoint *= -1;
+        }
+      }
+      
       m_elevator.setSetpointAsPercent(20);
-      //m_elevator.enableMotorPID();
+      m_elevator.enableMotorPID();
       SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
+      
     }
-    else {
+    else if(turretSetpoint < -90){
+
+      shootingBackwards = true;
+
+      if (isBlue) {
+        turretSetpoint = turretSetpoint + 180;
+        if (isC2) {
+          turretSetpoint *= -1;
+        }
+      }
+
+      m_elevator.setSetpointAsPercent(20);
+      m_elevator.enableMotorPID();
+      SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
+    } else {
+      shootingBackwards = false;
+      m_elevator.setSetpointAsPercent(0);
       m_elevator.disableMotorPID();
     }
 
@@ -223,15 +265,19 @@ public class AutoAim extends Command {
     }
     else {
       canAim = true;
+
+      if (shootingBackwards) {
+        pivotTargetAngle = (180 - pivotTargetAngle) + 2;
+      }
       m_Pivot.setSetpointInDegrees(pivotTargetAngle);
     }
 
-    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint() && canAim){
+    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint()){
       Superstructure.setRobotStatus(RobotStatus.AIMED);
       if(DriverStation.isAutonomous()){
         ConveyorBelt.getInstance().setMotorVelocity(1);
         shooted = true;
-        m_timer.start();
+        
       }
     }
     else {
@@ -262,7 +308,7 @@ public class AutoAim extends Command {
   @Override
   public boolean isFinished() {
     if(DriverStation.isAutonomous()){
-      if (m_timer.get() > 0.5) {
+      if (m_timer.get() > 3) {
         return true;
       }
     }

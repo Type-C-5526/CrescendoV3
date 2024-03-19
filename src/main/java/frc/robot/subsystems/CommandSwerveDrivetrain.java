@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.Auto.NearShotBack;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.Vector;
 
@@ -125,6 +127,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         NamedCommands.registerCommand("deployIntake", new DeployIntake());
         NamedCommands.registerCommand("autoAim", new AutoAim(() -> this.getState().Pose));
+        NamedCommands.registerCommand("nearShotBack", new NearShotBack());
+        NamedCommands.registerCommand("retractIntake", new RetractIntake());
 
         AutoBuilder.configureHolonomic(
             ()->this.getState().Pose, // Supplier of current robot pose

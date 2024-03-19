@@ -116,6 +116,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     return m_motor1.getPosition().getValueAsDouble();
   }
 
+  public double getPositionInPercent(){
+    return (m_motor1.getPosition().getValueAsDouble() * 100) / -0.0977055;
+  }
+
 
 
 

@@ -2,44 +2,58 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.Auto;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Elevator;
+import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.RobotStatus;
 
-public class RetractIntake extends Command {
-  /** Creates a new RetractIntake. */
-  private IntakeSubsystem m_intake;
+public class NearShotBack extends Command {
+
   private PivotSubsystem m_pivot;
   private ShooterSubsystem m_shooter;
+  private ConveyorBelt m_conveyor;
+  private ElevatorSubsystem m_elevator;
+
+  private boolean hasShot;
+  private boolean hasToEnd;
+
   private Timer m_timer;
-  public RetractIntake() {
+
+  /** Creates a new NearShotBack. */
+  public NearShotBack() {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_intake = IntakeSubsystem.getInstance();
+
+    m_elevator = ElevatorSubsystem.getInstance();
+    m_conveyor = ConveyorBelt.getInstance();
     m_pivot = PivotSubsystem.getInstance();
     m_shooter = ShooterSubsystem.getInstance();
-    
-    m_timer = new Timer();
-    m_timer.reset();
-    m_timer.start();
 
+    m_timer = new Timer();
+
+    
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_pivot.setSetpointInDegrees(-15);
+    m_elevator.setSetpointAsPercent(20);
+    m_elevator.enableMotorPID();
+
+    m_pivot.setSetpointInDegrees(0);
     m_pivot.enablePID();
-    m_shooter.disableMotorPID();
-    m_intake.setSpeed(0);
-    ElevatorSubsystem.getInstance().disableMotorPID();
+
+    m_shooter.setSetpoint(-80);
+    m_shooter.enableMotorPID();
+
+    hasShot = false;
+    hasToEnd = false;
+
+    m_timer.reset();
+    m_timer.stop();
 
   }
 
@@ -47,20 +61,34 @@ public class RetractIntake extends Command {
   @Override
   public void execute() {
 
-    if(m_pivot.atSetpoint()){
-      m_intake.setSetpointAsPercent(0);
+    if (m_elevator.getPositionInPercent() > 15) {
+      m_pivot.setSetpointInDegrees(120);
+    }
+
+    if (m_elevator.atSetpoint() && m_shooter.atSetpoint() && m_pivot.atSetpoint()) {
+      m_conveyor.setMotorVelocity(1);
+      hasShot = true;
+      m_timer.start();
+    }
+
+    if (hasShot && m_timer.get() > 1) {
+      m_pivot.setSetpointInDegrees(-15);
+
+      if (m_pivot.atSetpoint()) {
+        hasToEnd = true;
+      }
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Superstructure.setRobotStatus(RobotStatus.HOME);
+    m_elevator.disableMotorPID();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_intake.atSetpoint() || m_timer.get() > 2;
+    return hasToEnd;
   }
 }
