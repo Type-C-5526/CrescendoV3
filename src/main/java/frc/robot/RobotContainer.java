@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,8 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.FeedFromSource;
 import frc.robot.commands.LeaveAmp;
+import frc.robot.commands.NearShot;
+import frc.robot.commands.SafeZoneShot;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootTest;
 import frc.robot.generated.TunerConstants;
@@ -51,7 +54,7 @@ public class RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1); 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.10).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
 
@@ -71,6 +74,8 @@ public class RobotContainer {
   private final PivotSubsystem m_pivot = PivotSubsystem.getInstance();
 
   private void configureBindings() {
+
+    
 
     //TurretSubsystem.getInstance().setDefaultCommand(new AutoAim(() -> drivetrain.getState().Pose));
     
@@ -144,10 +149,12 @@ public class RobotContainer {
     operator.b().onTrue(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-1)));
     operator.b().onFalse(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-0.2)));
 
-
+    operator.povUp().whileTrue(new SafeZoneShot());
+    operator.povDown().whileTrue(new NearShot());
   }
 
   public RobotContainer() {
+    
     configureBindings();
   }
 

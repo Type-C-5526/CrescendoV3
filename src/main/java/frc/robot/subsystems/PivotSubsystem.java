@@ -205,25 +205,30 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getPivotTargetAngle(double _distance){
-    return m_interpolation3.interpolate(_distance);
+    return m_interpolation.interpolate(_distance);
   }
 
   public boolean IsEnabled(){
     return m_pidEnabled;
   }
   private void setTableValues(){
+    m_points.add(new Point(30.0,55.1));
+    m_points.add(new Point(50.0,52.1));
+    m_points.add(new Point(100.0,50.1));
     m_points.add(new Point(116.1,49.8));
     m_points.add(new Point(164.1, 44.4));
-    m_points.add(new Point(194.6, 37.1));
+    m_points.add(new Point(194.6, 36.1));
     m_points.add(new Point(262.1, 33.8));
     m_points.add(new Point(267.6, 32.85));
     m_points.add(new Point(293.1, 31.00));
-    m_points.add(new Point(329.1, 28.2));
-    m_points.add(new Point(379.6, 26.8));
-    m_points.add(new Point(460.1, 23.29));
-    m_points.add(new Point(498.1, 21.58));
-    m_points.add(new Point(554.1, 21.14));
-    m_points.add(new Point(611.1, 20.26));
+    m_points.add(new Point(329.1, 27.2));
+    m_points.add(new Point(379.6, 24.8));
+    m_points.add(new Point(460.1, 26.0));
+    m_points.add(new Point(498.1, 25.58));
+    m_points.add(new Point(554.1, 24.14));
+    m_points.add(new Point(611.1, 23.26));
+    m_points.add(new Point(640.1, 23.10));
+    m_points.add(new Point(700.1, 22.50));
 
     m_points2.add(new Point(155.1, 46.878));
     m_points2.add(new Point(171.1, 41.044));

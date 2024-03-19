@@ -8,11 +8,13 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.Field;
 import frc.robot.math.Vector;
+import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -32,11 +34,12 @@ public class AutoAim extends Command {
   private ElevatorSubsystem m_elevator;
   
   
-
+  private Timer m_timer;
 
   private double tolerance = 5.00;
 
   private boolean canAim;
+  private boolean shooted;
 
 
   /** Creates a new AutoAim. */
@@ -48,7 +51,9 @@ public class AutoAim extends Command {
     m_shooter = ShooterSubsystem.getInstance();
     m_turret = TurretSubsystem.getInstance();
     m_elevator = ElevatorSubsystem.getInstance();  
-    }
+
+    m_timer = new Timer();
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -60,11 +65,16 @@ public class AutoAim extends Command {
     m_Pivot.setSetpointInDegrees(0);
     m_Pivot.enablePID();
 
-    m_shooter.setSetpoint(-80);
+    m_shooter.setSetpoint(-90);
     m_shooter.enableMotorPID();
 
     m_turret.setSetpoint(0);
     m_turret.enableTurretPID();
+
+    shooted = false;
+
+    m_timer.reset();
+    m_timer.stop();
 
   }
 
@@ -170,16 +180,17 @@ public class AutoAim extends Command {
 
     SmartDashboard.putNumber("Turret Setpoint VolteaDo", turretSetpoint);
     if(turretSetpoint > 90){
-      
-      turretSetpoint = (180 - turretSetpoint);
+      //turretSetpoint += 90;
+      turretSetpoint = -(180 - turretSetpoint);
       m_elevator.setSetpointAsPercent(20);
-      m_elevator.enableMotorPID();
+      //m_elevator.enableMotorPID();
 
       SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
     }else if(turretSetpoint < -90){
-      turretSetpoint = (-180 - turretSetpoint);
+      //turretSetpoint += 90;
+      turretSetpoint = -(-180 - turretSetpoint);
       m_elevator.setSetpointAsPercent(20);
-      m_elevator.enableMotorPID();
+      //m_elevator.enableMotorPID();
       SmartDashboard.putNumber("Turret Setpoint VolteaDo FixeD", turretSetpoint);
     }
     else {
@@ -194,6 +205,7 @@ public class AutoAim extends Command {
     else {
       canAim = true;
     }*/
+
 
     SmartDashboard.putNumber("Turret Supposed Setpoint: ", turretSetpoint);
     SmartDashboard.putBoolean("Is Blue:", isBlue);
@@ -216,6 +228,11 @@ public class AutoAim extends Command {
 
     if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint() && canAim){
       Superstructure.setRobotStatus(RobotStatus.AIMED);
+      if(DriverStation.isAutonomous()){
+        ConveyorBelt.getInstance().setMotorVelocity(1);
+        shooted = true;
+        m_timer.start();
+      }
     }
     else {
       Superstructure.setRobotStatus(RobotStatus.AIMING);
@@ -234,12 +251,21 @@ public class AutoAim extends Command {
     }
     m_elevator.disableMotorPID();
 
+    if(DriverStation.isAutonomous()){
+      m_shooter.disableMotorPID();
+    }
+
     new GoHome().schedule();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(DriverStation.isAutonomous()){
+      if (m_timer.get() > 0.5) {
+        return true;
+      }
+    }
     return !canAim;
   }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ConveyorBelt;
@@ -69,11 +70,15 @@ public class DeployIntake extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
    if(m_conveyor.hasGamePiece()){
       Superstructure.setRobotStatus(RobotStatus.HAS_GAME_PIECE);
       return true;
     }
-    
+
+    if (DriverStation.isAutonomous() && m_timer.get() > 3) {
+      return true;
+    }
 
     return false;
   }
