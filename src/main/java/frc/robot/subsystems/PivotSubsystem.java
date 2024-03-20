@@ -83,7 +83,7 @@ public class PivotSubsystem extends SubsystemBase {
     
 
 
-    m_PID = new PIDController(10.2, 0, 0);
+    m_PID = new PIDController(9.5, 0, 0);
     m_PID.setTolerance(0.05);
     
 
