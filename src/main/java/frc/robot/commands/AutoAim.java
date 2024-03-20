@@ -36,6 +36,8 @@ public class AutoAim extends Command {
   
   private Timer m_timer;
 
+  private Timer m_timer2;
+
   private double tolerance = 5.00;
 
   private boolean canAim;
@@ -59,6 +61,7 @@ public class AutoAim extends Command {
     m_elevator = ElevatorSubsystem.getInstance();  
 
     m_timer = new Timer();
+    m_timer2 = new Timer();
   }
 
   // Called when the command is initially scheduled.
@@ -78,6 +81,7 @@ public class AutoAim extends Command {
     m_turret.enableTurretPID();
 
     shooted = false;
+    
     shootingBackwards = false;
 
     m_timer.reset();
@@ -89,6 +93,9 @@ public class AutoAim extends Command {
     isC4 = false;
 
     m_timer.start();
+
+    m_timer2.reset();
+    m_timer2.stop();
 
   }
 
@@ -277,6 +284,7 @@ public class AutoAim extends Command {
       if(DriverStation.isAutonomous()){
         ConveyorBelt.getInstance().setMotorVelocity(1);
         shooted = true;
+        m_timer2.start();
         
       }
     }
@@ -307,6 +315,10 @@ public class AutoAim extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
+    if (shooted && m_timer2.get() > 0.5) {
+      return true;
+    }
     if(DriverStation.isAutonomous()){
       if (m_timer.get() > 3) {
         return true;

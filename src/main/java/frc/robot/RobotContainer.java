@@ -67,7 +67,7 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   /* Path follower */
-  private Command runAuto = drivetrain.getAutoPath("Auto1");
+  private Command runAuto = drivetrain.getAutoPath("Auto2");
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -113,7 +113,7 @@ public class RobotContainer {
 
     driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
  
-    drivetrain.seedFieldRelative(new Pose2d(new Translation2d(1.32,5.53), new Rotation2d()));  //TODO: Remove Initial Position
+    //drivetrain.seedFieldRelative(new Pose2d(new Translation2d(1.36,5.56), new Rotation2d(180)));  //TODO: Remove Initial Position
 
     driver.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
     driver.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
@@ -151,6 +151,8 @@ public class RobotContainer {
 
     operator.povUp().whileTrue(new SafeZoneShot());
     operator.povDown().whileTrue(new NearShot());
+
+    operator.back().onTrue(new InstantCommand(() -> IntakeSubsystem.getInstance().setSetpointAsPercent(100)));
   }
 
   public RobotContainer() {

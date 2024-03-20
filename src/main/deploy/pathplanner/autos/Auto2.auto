@@ -1,0 +1,106 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4282260416372687,
+      "y": 5.966229691718643
+    },
+    "rotation": 179.81675429819782
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAim"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto2Note1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "deployIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAim"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A2N2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "deployIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAim"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A2N3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "deployIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A2N4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAim"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
