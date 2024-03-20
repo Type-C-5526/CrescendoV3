@@ -62,7 +62,7 @@ public class AprilTagCamera {
       m_camera, 
       transform);
 
-    m_estimatedRobotPose.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    //m_estimatedRobotPose.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
   }
 

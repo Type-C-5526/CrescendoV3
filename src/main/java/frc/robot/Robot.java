@@ -28,6 +28,8 @@ public class Robot extends TimedRobot {
 
     m_telemetry = new Telemetry5526();
 
+    //CameraStart.startThread();
+
   }
   @Override
   public void robotPeriodic() {

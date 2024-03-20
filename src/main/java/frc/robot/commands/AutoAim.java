@@ -141,7 +141,8 @@ public class AutoAim extends Command {
     //C1
     if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() <= 0){
 
-      angle = Math.abs(angle);
+      
+      angle = (90 - Math.abs(angle)) + 270;
 
       isC1 = true;
       isC2 = false;
@@ -177,8 +178,8 @@ public class AutoAim extends Command {
       isC3 = false;
       isC4 = true;
 
-      angle = (90 - Math.abs(angle)) + 270;
       
+      angle = Math.abs(angle);
     }
 
     SmartDashboard.putBoolean("IS in c1",  isC1 );    
@@ -216,6 +217,7 @@ public class AutoAim extends Command {
       turretSetpoint = angleBetweenVectors * -1;
     }
 
+    /* 
     SmartDashboard.putNumber("Turret Setpoint VolteaDo", turretSetpoint);
     if(turretSetpoint > 90){
 
@@ -250,7 +252,7 @@ public class AutoAim extends Command {
       shootingBackwards = false;
       m_elevator.setSetpointAsPercent(0);
       m_elevator.disableMotorPID();
-    }
+    }*/
 
     /* 
     if(turretSetpoint > 90 || turretSetpoint < -90){
@@ -279,9 +281,6 @@ public class AutoAim extends Command {
     else {
       canAim = true;
 
-      if (shootingBackwards) {
-        pivotTargetAngle = (180 - pivotTargetAngle) + 2;
-      }
       m_Pivot.setSetpointInDegrees(pivotTargetAngle);
     }
 
