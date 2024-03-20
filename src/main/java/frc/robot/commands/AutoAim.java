@@ -16,6 +16,7 @@ import frc.robot.Constants.Field;
 import frc.robot.math.Vector;
 import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
@@ -96,6 +97,11 @@ public class AutoAim extends Command {
 
     m_timer2.reset();
     m_timer2.stop();
+
+    if (DriverStation.isAutonomous()) {
+      IntakeSubsystem.getInstance().setSetpointAsPercent(0);
+      IntakeSubsystem.getInstance().setSpeed(0);
+    }
 
   }
 
@@ -316,7 +322,7 @@ public class AutoAim extends Command {
   @Override
   public boolean isFinished() {
 
-    if (shooted && m_timer2.get() > 0.5) {
+    if (shooted && m_timer2.get() > 0.8) {
       return true;
     }
     if(DriverStation.isAutonomous()){

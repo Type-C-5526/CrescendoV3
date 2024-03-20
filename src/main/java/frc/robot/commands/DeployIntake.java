@@ -38,8 +38,15 @@ public class DeployIntake extends Command {
     m_pivot.setSetpointInDegrees(-15);
     m_pivot.enablePID();
 
-    m_intake.setSetpointAsPercent(90);
-    m_intake.enableMotorPID();
+    if (DriverStation.isAutonomous()) {
+      m_intake.setSetpointAsPercent(87);
+      m_intake.enableMotorPID();
+    }else{
+      m_intake.setSetpointAsPercent(90);
+      m_intake.enableMotorPID();
+    }
+
+    
 
     m_conveyor.setMotorVelocity(-0.1);
 
