@@ -21,8 +21,8 @@ public class Constants {
 
         public static final Translation2d CENTER = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2);
 
-        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.56);
-        public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.56);
+        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.56 + Units.inchesToMeters(22.88));
+        public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.15);
     }
 
     public static final class ShooterPivot {

@@ -27,7 +27,7 @@ public class FeedFromSource extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_pivot.setSetpointInDegrees(27);
+    m_pivot.setSetpointInDegrees(28);
     m_pivot.enablePID();
 
    

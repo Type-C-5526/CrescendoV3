@@ -39,7 +39,7 @@ public class AutoAim extends Command {
 
   private Timer m_timer2;
 
-  private double tolerance = 5.00;
+  private double tolerance = 10.00;
 
   private boolean canAim;
   private boolean shooted;
@@ -208,14 +208,21 @@ public class AutoAim extends Command {
     SmartDashboard.putNumber("vector A Angle", vectorAAngle);
     SmartDashboard.putNumber("vector B Angle", vectorBAngle);
 
-    
+    int angleChecker = (Math.abs(vectorAAngle) + Math.abs(angleBetweenVectorsInt));
 
-    if((Math.abs(vectorAAngle) + Math.abs(angleBetweenVectorsInt)) - Math.abs(vectorBAngle) <= tolerance){//propuesta de para tener tolerance
+    if(angleChecker > 360){
+
+      angleChecker = angleChecker - 360;
+      
+    }
+
+    if(angleChecker - Math.abs(vectorBAngle) <= tolerance){//propuesta de para tener tolerance
       turretSetpoint = angleBetweenVectors;
     }
     else {
       turretSetpoint = angleBetweenVectors * -1;
     }
+
 
     /* 
     SmartDashboard.putNumber("Turret Setpoint VolteaDo", turretSetpoint);
@@ -298,8 +305,8 @@ public class AutoAim extends Command {
     }
 
     
-    TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
-    //m_turret.setSetpoint(0);
+    //TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
+    m_turret.setSetpoint(0);
   }
 
   // Called once the command ends or is interrupted.

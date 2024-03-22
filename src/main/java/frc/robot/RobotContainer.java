@@ -138,13 +138,21 @@ public class RobotContainer {
     operator.rightBumper().whileTrue(new Shoot());   
     operator.y().whileTrue(new FeedFromSource());
     operator.a().whileTrue(new AutoAim(() -> drivetrain.getState().Pose)); 
+    operator.a().whileTrue(
+      drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
+                                                                                           // negative Y (forward)
+            .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(drivetrain.aimToSpeaker().getAsDouble()) // Drive counterclockwise with negative X (left)
+        ).ignoringDisable(true));
     operator.x().whileTrue(new LeaveAmp(() -> drivetrain.getState().Pose));
+    
+    /* 
     operator.x().whileTrue(
       drivetrain.applyRequest(() -> driveWithoutRotationalDeadband.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(drivetrain.getHeadingToApply(true).getAsDouble()) // Drive counterclockwise with negative X (left)
-        ).ignoringDisable(true));
+        ).ignoringDisable(true));*/
 
     operator.b().onTrue(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-1)));
     operator.b().onFalse(new InstantCommand(() -> ConveyorBelt.getInstance().setMotorVelocity(-0.2)));
@@ -162,6 +170,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     /* First put the drivetrain into auto run mode, then run the auto */
-    return runAuto;
+    return null;
   }
 }

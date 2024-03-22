@@ -62,10 +62,10 @@ public class LeaveAmp extends Command {
 
     if(m_Elevator.atSetpoint()){
       if(heading > 90 && heading < 270){
-        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(90));
+        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(0));
       }
       else{
-        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(-90));
+        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(0));
       }
       m_turret.enableTurretPID();
     }

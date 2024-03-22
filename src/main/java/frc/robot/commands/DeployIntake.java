@@ -80,10 +80,10 @@ public class DeployIntake extends Command {
   @Override
   public boolean isFinished() {
 
-   if(m_conveyor.hasGamePiece()){
+   /*if(m_conveyor.hasGamePiece()){
       Superstructure.setRobotStatus(RobotStatus.HAS_GAME_PIECE);
       return true;
-    }
+    }*/
 
     if (DriverStation.isAutonomous() && m_timer.get() > 3) {
       return true;

@@ -29,12 +29,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.Field;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.Auto.NearShotBack;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.Vector;
+import frc.robot.util.PoseHelper;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -57,6 +59,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.SysIdSwerveTranslation TranslationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveRotation RotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.SysIdSwerveSteerGains SteerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+
+    boolean isBlue = false;
+
+    public boolean isC1;
+    public boolean isC2;
+    public boolean isC3;
+    public boolean isC4;
 
     /* Use one of these sysidroutines for your particular test */
     private SysIdRoutine SysIdRoutineTranslation = new SysIdRoutine(
@@ -100,6 +109,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         configurePathPlanner();
 
+        isC1 = false;
+        isC2 = false;
+        isC3 = false;
+        isC4 = false;
+
         //m_PIDHeading = new PIDController(0.02, 0, 0.001);
 
         if (Utils.isSimulation()) {
@@ -112,6 +126,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         m_PIDHeading = new PIDController(0.04, 0, 0.001);
         m_PIDHeading.setTolerance(0);
+
+        isC1 = false;
+        isC2 = false;
+        isC3 = false;
+        isC4 = false;
 
         configurePathPlanner();
         if (Utils.isSimulation()) {
@@ -140,7 +159,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            () -> false, // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red, // Assume the path needs to be flipped for Red vs Blue, this is normally the case
             this); // Subsystem for requirements
     }
 
@@ -251,6 +270,128 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         };
     }
 
+    public DoubleSupplier aimToSpeaker(){
+        return () -> {
+
+            double heading = this.getState().Pose.getRotation().getDegrees();
+
+            if (heading < 0) {
+                heading += 360;
+            }
+
+            
+
+            
+
+
+            DriverStation.getAlliance().ifPresent((allianceColor) -> {
+                if (allianceColor == Alliance.Blue) {
+                  isBlue = true;
+                }else if (allianceColor == Alliance.Red) {
+                  isBlue = false; 
+                }
+            });
+
+            
+            PoseHelper helper = new PoseHelper( 
+            (isBlue) ? Field.BLUE_SPEAKER : Field.RED_SPEAKER, this.getState().Pose.getTranslation());
+            double distance = helper.DistanceBetweenPoses();
+            double angle = helper.AngleBetweenPoses();
+
+            //C1
+            if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() <= 0){
+
+            
+                angle = Math.abs(angle);
+        
+                isC1 = true;
+                isC2 = false;
+                isC3 = false;
+                isC4 = false; 
+            }
+            //C2
+            else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() <= 0){
+        
+                isC1 = false;
+                isC2 = true;
+                isC3 = false;
+                isC4 = false;
+        
+                angle = (90 - Math.abs(angle)) + 90;
+            }
+            //C3
+            else if(helper.DiffXBetweenPoses() >= 0 && helper.DiffYBetweenPoses() >= 0){
+        
+                isC1 = false;
+                isC2 = false;
+                isC3 = true;
+                isC4 = false;
+        
+                angle = Math.abs(angle) + 180;
+        
+            }
+            //C4
+            else if(helper.DiffXBetweenPoses() <= 0 && helper.DiffYBetweenPoses() >= 0){
+        
+                isC1 = false;
+                isC2 = false;
+                isC3 = false;
+                isC4 = true;
+        
+                angle = (90 - Math.abs(angle)) + 270;
+                
+            }
+  
+
+            Vector sourceVector = new Vector(distance, angle, IsOnCANFD);
+
+            SmartDashboard.putNumber("Robot Heading", heading);
+
+            Vector headingVector = new Vector(1, heading, true); //Is blue does nothing
+            double angleBetweenVectors = Vector.getAngleBetweenVectors(headingVector, sourceVector);
+
+            SmartDashboard.putNumber("Angle Between Vectors: ", angleBetweenVectors);
+
+            double differenceToApply;
+
+            if (isBlue) {
+                differenceToApply =  angleBetweenVectors;
+
+                if (differenceToApply > 360) {
+                    differenceToApply = differenceToApply - 360;
+                }
+
+                if((headingVector.getAngle() + differenceToApply) - sourceVector.getAngle()<= 5){
+                    differenceToApply *= -1;
+                }else{
+                    differenceToApply *= 1;
+                }
+
+
+            }else{
+                double differenceFromSourceTo0Degrees = 360 - sourceVector.getAngle();
+                heading += differenceFromSourceTo0Degrees;
+
+                if (heading > 360) {
+                    heading = heading - 360;
+                }
+
+                if(heading <= 180){
+                    differenceToApply = angleBetweenVectors;
+                }else{
+                    differenceToApply = -angleBetweenVectors;
+                }
+
+            }
+
+            
+
+            
+            
+            return m_PIDHeading.calculate(differenceToApply);
+        };
+    }
+
     @Override
     public void periodic() {
 
@@ -264,8 +405,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 this.setOperatorPerspectiveForward(
                         allianceColor == Alliance.Red ? RedAlliancePerspectiveRotation
                                 : BlueAlliancePerspectiveRotation);
+                  
                 hasAppliedOperatorPerspective = true;
             });
+
+            
         }
     }
 }
