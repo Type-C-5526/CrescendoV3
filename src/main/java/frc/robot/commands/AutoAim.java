@@ -20,7 +20,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 import frc.robot.util.PoseHelper;
 
@@ -31,7 +30,6 @@ public class AutoAim extends Command {
   private PivotSubsystem m_Pivot;
 
   private ShooterSubsystem m_shooter;
-  private TurretSubsystem m_turret;
   private ElevatorSubsystem m_elevator;
   
   
@@ -55,10 +53,9 @@ public class AutoAim extends Command {
   public AutoAim(Supplier<Pose2d> _poseSupplier) {
     m_poseSupplier = _poseSupplier;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(TurretSubsystem.getInstance());
+    addRequirements();
 
     m_shooter = ShooterSubsystem.getInstance();
-    m_turret = TurretSubsystem.getInstance();
     m_elevator = ElevatorSubsystem.getInstance();  
 
     m_timer = new Timer();
@@ -77,9 +74,6 @@ public class AutoAim extends Command {
 
     m_shooter.setSetpoint(-90);
     m_shooter.enableMotorPID();
-
-    m_turret.setSetpoint(0);
-    m_turret.enableTurretPID();
 
     shooted = false;
     
@@ -291,7 +285,7 @@ public class AutoAim extends Command {
       m_Pivot.setSetpointInDegrees(pivotTargetAngle);
     }
 
-    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint()){
+    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint()){
       Superstructure.setRobotStatus(RobotStatus.AIMED);
       if(DriverStation.isAutonomous()){
         ConveyorBelt.getInstance().setMotorVelocity(1);
@@ -306,7 +300,6 @@ public class AutoAim extends Command {
 
     
     //TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));
-    m_turret.setSetpoint(0);
   }
 
   // Called once the command ends or is interrupted.

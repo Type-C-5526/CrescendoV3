@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.math.PhoenixUnits;
-import frc.robot.util.AprilTagCamera.Resolution;
 import frc.robot.util.PIDUtil;
 
 public class Constants {
@@ -36,7 +35,7 @@ public class Constants {
 
         //public static final double MAGNET_OFFSET = -0.382080;
         //public static final double MAGNET_OFFSET = -0.762207;
-        public static final double MAGNET_OFFSET = -0.353516;
+        public static final double MAGNET_OFFSET = -0.177343;
 
         
 
@@ -61,7 +60,6 @@ public class Constants {
             new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(180))
         );
 
-        public static final Resolution CAMERA_A_RESOLUTION = Resolution.RES_1280_720;
         public static final Rotation2d CAMERA_A_FOV = Rotation2d.fromDegrees(78.44);
 
         public static final String CAMERA_B_NAME = "Arducam_OV9281_USB_Camera_B";
@@ -71,7 +69,6 @@ public class Constants {
             new Rotation3d(0.0, Math.toRadians(-25.0), 0.0)
         );
 
-        public static final Resolution CAMERA_B_RESOLUTION = Resolution.RES_1280_720;
         public static final Rotation2d CAMERA_B_FOV = Rotation2d.fromDegrees(77.68);
 
     }

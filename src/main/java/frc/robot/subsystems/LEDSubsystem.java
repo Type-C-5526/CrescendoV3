@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDs;
 import frc.robot.subsystems.Superstructure.RobotStatus;
+import frc.robot.util.LimelightHelpers;
 
 public class LEDSubsystem extends SubsystemBase {
   private AddressableLED m_leds;
@@ -82,12 +83,16 @@ public class LEDSubsystem extends SubsystemBase {
     if(m_hasToRepeat && m_reapeatCounter < m_timesToRepeat){
       m_reapeatCounter++;
       assignLedStatus(m_StatusToRepeat);
+
+      LimelightHelpers.setLEDMode_ForceBlink("limelight-a");
     }
     else {
       m_hasToRepeat = false;
       m_reapeatCounter = 0;
       m_timesToRepeat = 0;
       assignLedStatus(Superstructure.getRobotStatus());
+
+      LimelightHelpers.setLEDMode_ForceOff("limelight-a");
     }
 
    

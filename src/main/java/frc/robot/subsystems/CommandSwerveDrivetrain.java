@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -119,13 +120,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setCurrentLimits();
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
 
         m_PIDHeading = new PIDController(0.04, 0, 0.001);
-        m_PIDHeading.setTolerance(0);
+        m_PIDHeading.setTolerance(1);
 
         isC1 = false;
         isC2 = false;
@@ -136,6 +138,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setCurrentLimits();
     }
 
     private void configurePathPlanner() {
@@ -200,6 +203,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+
+    public void setCurrentLimits(){
+
+        var customLimtsConfigs = new CurrentLimitsConfigs();
+
+        for(var module : Modules){
+            var currentConfigurator = module.getDriveMotor().getConfigurator();
+
+            currentConfigurator.refresh(customLimtsConfigs);
+
+            customLimtsConfigs.SupplyCurrentLimit = 40;
+            customLimtsConfigs.SupplyCurrentLimitEnable = true;
+
+            customLimtsConfigs.SupplyCurrentThreshold = 80;
+            customLimtsConfigs.SupplyTimeThreshold = 1.275;
+
+            currentConfigurator.apply(customLimtsConfigs);
+
+        }
     }
 
     public DoubleSupplier getHeadingToApply(boolean isForAmp){
@@ -384,9 +408,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
             }
 
-            
-
-            
+            if(m_PIDHeading.atSetpoint()){
+                Superstructure.setChasisAimed(true);
+            }else{
+                Superstructure.setChasisAimed(false);
+            }
             
             return m_PIDHeading.calculate(differenceToApply);
         };

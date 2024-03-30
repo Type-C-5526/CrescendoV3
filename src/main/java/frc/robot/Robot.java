@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RetractIntake;
+import frc.robot.util.CameraStart;
 import frc.robot.util.Telemetry5526;
 
 public class Robot extends TimedRobot {
@@ -26,9 +27,9 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
 
-    m_telemetry = new Telemetry5526();
+    //m_telemetry = new Telemetry5526();
 
-    //CameraStart.startThread();
+    CameraStart.startThread();
 
   }
   @Override

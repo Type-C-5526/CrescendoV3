@@ -8,20 +8,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 
 public class NearShot extends Command {
 
   private PivotSubsystem m_pivot;
-  private TurretSubsystem m_turret;
   private ShooterSubsystem m_shooter;
 
   /** Creates a new SafeZoneShot. */
   public NearShot() {
 
     m_pivot = PivotSubsystem.getInstance();
-    m_turret = TurretSubsystem.getInstance();
     m_shooter = ShooterSubsystem.getInstance();
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -33,8 +30,6 @@ public class NearShot extends Command {
     m_pivot.setSetpointInDegrees(52);
     m_pivot.enablePID();
 
-    m_turret.setSetpoint(0);
-    m_turret.enableTurretPID();
 
     m_shooter.setSetpoint(-90);
     m_shooter.enableMotorPID();
@@ -44,7 +39,7 @@ public class NearShot extends Command {
   @Override
   public void execute() {
 
-    if (m_pivot.atSetpoint() && m_shooter.atSetpoint() && m_turret.isAtSetpoint()) {
+    if (m_pivot.atSetpoint() && m_shooter.atSetpoint()) {
       Superstructure.setRobotStatus(RobotStatus.AIMED);
     }else{
       Superstructure.setRobotStatus(RobotStatus.AIMING);

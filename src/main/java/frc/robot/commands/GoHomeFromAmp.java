@@ -9,21 +9,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 
 public class GoHomeFromAmp extends Command {
   /** Creates a new GoHomeFromAmp. */
   private ElevatorSubsystem m_elevator;
   private PivotSubsystem m_pivot;
-  private TurretSubsystem m_turret;
   private Timer m_Timer;
 
   public GoHomeFromAmp() {
     // Use addRequirements() here to declare subsystem dependencies.
     m_elevator = ElevatorSubsystem.getInstance();
     m_pivot = PivotSubsystem.getInstance();
-    m_turret = TurretSubsystem.getInstance();
     m_Timer = new Timer();
     m_Timer.reset();
     m_Timer.start();
@@ -42,9 +39,7 @@ public class GoHomeFromAmp extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_pivot.atSetpoint()){
-      m_turret.setSetpoint(0);
-    }
+    
   }
 
   // Called once the command ends or is interrupted.

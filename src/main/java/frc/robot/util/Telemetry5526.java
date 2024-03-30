@@ -14,7 +14,6 @@ import frc.robot.subsystems.ConveyorBelt;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
 
 /** Add your docs here. */
 public class Telemetry5526 extends SubsystemBase{
@@ -23,7 +22,6 @@ public class Telemetry5526 extends SubsystemBase{
     private ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
     private PivotSubsystem m_pivot = PivotSubsystem.getInstance();
     private ConveyorBelt m_conveyor = ConveyorBelt.getInstance();
-    private TurretSubsystem m_turret = TurretSubsystem.getInstance();
     private ElevatorSubsystem m_elevator = ElevatorSubsystem.getInstance();
 
     private ShuffleboardTab m_SubsystemsTab = Shuffleboard.getTab("Subsystems Telemetry");
@@ -39,10 +37,6 @@ public class Telemetry5526 extends SubsystemBase{
     private ShuffleboardLayout m_ConveyorLayout = m_SubsystemsTab.getLayout("Conveyor", BuiltInLayouts.kList)
     .withSize(2,5)
     .withPosition(4,0);
-
-     private ShuffleboardLayout m_TurretLayout = m_SubsystemsTab.getLayout("Turret", BuiltInLayouts.kList)
-    .withSize(2,5)
-    .withPosition(6,0);
 
        private ShuffleboardLayout m_ElevatorLayout = m_SubsystemsTab.getLayout("Elevator", BuiltInLayouts.kList)
     .withSize(2,5)
@@ -64,12 +58,6 @@ public class Telemetry5526 extends SubsystemBase{
     private GenericEntry m_ConveyorHasGamePiece = m_ConveyorLayout.add("Conveyor has Game Piece: " , false).getEntry();   
     private GenericEntry m_ConveyorIsHolding = m_ConveyorLayout.add("Conveyor Is Holding: " , false).getEntry();
     private GenericEntry m_ConveyorIsReleasing = m_ConveyorLayout.add("Conveyor is Releasing: " , false).getEntry();
-
-    private GenericEntry m_TurretIsEnabled = m_TurretLayout.add("Turret Is Enabled: ", false).getEntry();   
-    private GenericEntry m_TurretAtSetpoint = m_TurretLayout.add("Turret Is At Setpoint: ", false).getEntry();
-    private GenericEntry m_TurretSetpoint = m_TurretLayout.add("Turret Setpoint: ", 0 ).getEntry();
-    private GenericEntry m_TurretPosition = m_TurretLayout.add("Turret Position: ", 0 ).getEntry();
-    private GenericEntry m_TurretAtHome = m_TurretLayout.add("Turret Is At Home: ", false).getEntry();
 
     private GenericEntry m_ElevatorIsEnabled = m_ElevatorLayout.add("Elevator Is Enabled: ",false).getEntry();
     private GenericEntry m_ElevatorAtSetpoint = m_ElevatorLayout.add("Elevator Is At Setpoint: ",false).getEntry();
@@ -101,12 +89,6 @@ public class Telemetry5526 extends SubsystemBase{
         m_ConveyorIsHolding.setBoolean(m_conveyor.isHolding());
         m_ConveyorIsReleasing.setBoolean(m_conveyor.isReleasing());
         m_ConveyorHasGamePiece.setBoolean(m_conveyor.hasGamePiece());
-
-        m_TurretSetpoint.setDouble(m_turret.getSetpoint());
-        m_TurretAtHome.setBoolean(m_turret.isHome());
-        m_TurretAtSetpoint.setBoolean(m_turret.isAtSetpoint());
-        m_TurretPosition.setDouble(m_turret.getMeasurment());
-        m_TurretIsEnabled.setBoolean(m_turret.isEnabled());
 
         m_ElevatorAtSetpoint.setBoolean(m_elevator.atSetpoint());
         m_ElevatorIsEnabled.setBoolean(m_elevator.isEnabled());

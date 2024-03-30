@@ -12,13 +12,11 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 
 public class LeaveAmp extends Command {
   private PivotSubsystem m_PivotSubsystem = PivotSubsystem.getInstance();
   private ElevatorSubsystem m_Elevator = ElevatorSubsystem.getInstance();
-  private TurretSubsystem m_turret = TurretSubsystem.getInstance();
   private ShooterSubsystem m_shooter = ShooterSubsystem.getInstance();
 
   private Supplier<Pose2d> m_poseSupplier;
@@ -61,20 +59,14 @@ public class LeaveAmp extends Command {
       m_Elevator.enableMotorPID();
 
     if(m_Elevator.atSetpoint()){
-      if(heading > 90 && heading < 270){
-        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(0));
-      }
-      else{
-        m_turret.setSetpoint(TurretSubsystem.getAngleToTicks(0));
-      }
-      m_turret.enableTurretPID();
-    }
-    if(m_turret.isAtSetpoint()){
+      
     Superstructure.setRobotStatus(RobotStatus.AIMED);
-
     }
-  
   }
+
+    
+  
+  
 
   }
 
