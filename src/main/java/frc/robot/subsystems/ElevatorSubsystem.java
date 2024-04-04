@@ -8,11 +8,13 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,6 +23,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new ElevatorSubsystem. */
   private TalonFX m_motor1;
   private TalonFX m_followerMotor;
+
+  private PIDController m_PID;
+  private DutyCycleOut m_dutyCycle = new DutyCycleOut(0);
+
+
 
   private TalonFXConfiguration m_motor1Configuration;
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
@@ -32,6 +39,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private NeutralOut m_break;
 
   private static ElevatorSubsystem m_instance;
+
+  private double m_forwardMaxOutput = 1;
+  private double m_reverseMaxOutput = 1;
   
 
 
@@ -42,6 +52,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_break = new NeutralOut();
     m_motor1 = new TalonFX(Constants.Elevator.talonFXElevatorID, Constants.Elevator.canbus);
     m_followerMotor = new TalonFX(Constants.Elevator.talonFollowerFXElevatorID, Constants.Elevator.canbus);
+
+    m_PID = new PIDController(0.1, 0, 0);
+    m_PID.setTolerance(0.05);
+
+    
 
     m_motor1Configuration = new TalonFXConfiguration();
 
@@ -80,7 +95,19 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     if(m_enabled){
-      m_motor1.setControl(m_mmReq.withPosition(m_setpoint).withSlot(0));
+
+      double output = m_PID.calculate(m_motor1.getPosition().getValueAsDouble());
+
+      if(output > m_forwardMaxOutput){
+        output = m_forwardMaxOutput;
+      }else if(output < -m_reverseMaxOutput){
+        output = -m_reverseMaxOutput;
+      }
+      m_motor1.setControl(m_dutyCycle.withOutput(output));
+
+      //m_motor1.setControl(m_mmReq.withPosition(m_setpoint).withSlot(0));
+
+
     }
     else {
       m_motor1.setControl(m_break);
@@ -90,7 +117,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void setSetpointAsPercent(double _Setpoint){
-    m_setpoint = _Setpoint * -0.0977055;
+
+    m_setpoint = _Setpoint * -0.57222;
+
+    m_PID.setSetpoint(m_setpoint);
   }
 
   public void enableMotorPID() {
@@ -117,7 +147,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getPositionInPercent(){
-    return (m_motor1.getPosition().getValueAsDouble() * 100) / -0.0977055;
+    return (m_motor1.getPosition().getValueAsDouble() * 100) / -0.57222;
   }
 
 

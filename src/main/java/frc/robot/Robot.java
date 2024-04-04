@@ -8,9 +8,11 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.RetractIntake;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.util.CameraStart;
 import frc.robot.util.Telemetry5526;
 
@@ -29,12 +31,15 @@ public class Robot extends TimedRobot {
 
     //m_telemetry = new Telemetry5526();
 
-    CameraStart.startThread();
+    //CameraStart.startThread();
 
   }
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
+
+    SmartDashboard.putBoolean("Bypass Color Sensor", Superstructure.isIgnoringColorSensor());
+    SmartDashboard.putBoolean("By Pass Aimed", Superstructure.isIgnoringAimed());
 
     /* 
 

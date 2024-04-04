@@ -14,7 +14,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.RobotStatus;
 
-public class DeployIntake extends Command {
+public class OpenAll extends Command {
   /** Creates a new DeployIntake. */
   private Timer m_timer;
   private IntakeSubsystem m_intake;
@@ -23,7 +23,7 @@ public class DeployIntake extends Command {
   private ConveyorBelt m_conveyor;
 
 
-  public DeployIntake() {
+  public OpenAll() {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = IntakeSubsystem.getInstance();
     m_pivot = PivotSubsystem.getInstance();
@@ -35,7 +35,7 @@ public class DeployIntake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_pivot.setSetpointInDegrees(-15);
+    m_pivot.setSetpointInDegrees(30);
     m_pivot.enablePID();
 
     if (DriverStation.isAutonomous()) {
@@ -48,7 +48,7 @@ public class DeployIntake extends Command {
 
     
 
-    m_conveyor.setMotorVelocity(-0.1);
+    m_conveyor.setMotorVelocity(1);
 
     m_timer.reset();
     m_timer.start();
@@ -59,9 +59,9 @@ public class DeployIntake extends Command {
   public void execute() {
 
     if(m_timer.get() > 0.5){
-      m_intake.setSpeed(1);
-      m_pivot.setSetpointInDegrees(-30);
-      m_shooter.setSetpoint(80);
+      m_intake.setSpeed(-1);
+      m_pivot.setSetpointInDegrees(30);
+      m_shooter.setSetpoint(-80);
       m_shooter.enableMotorPID();
 
     }
@@ -79,20 +79,6 @@ public class DeployIntake extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
-    if (!Superstructure.isIgnoringColorSensor()) {
-      if(m_conveyor.hasGamePiece()){
-        Superstructure.setRobotStatus(RobotStatus.HAS_GAME_PIECE);
-        return true;
-      }
-    }
-
-   
-
-    if (DriverStation.isAutonomous() && m_timer.get() > 3) {
-      return true;
-    }
-
     return false;
   }
 }

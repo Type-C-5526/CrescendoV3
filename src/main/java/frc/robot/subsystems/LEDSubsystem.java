@@ -84,7 +84,7 @@ public class LEDSubsystem extends SubsystemBase {
       m_reapeatCounter++;
       assignLedStatus(m_StatusToRepeat);
 
-      LimelightHelpers.setLEDMode_ForceBlink("limelight-a");
+      VisionSubsystem.getInstance().getAprilTagCamera().blinkLEDS();
     }
     else {
       m_hasToRepeat = false;
@@ -92,7 +92,7 @@ public class LEDSubsystem extends SubsystemBase {
       m_timesToRepeat = 0;
       assignLedStatus(Superstructure.getRobotStatus());
 
-      LimelightHelpers.setLEDMode_ForceOff("limelight-a");
+      VisionSubsystem.getInstance().getAprilTagCamera().turnOffLEDS();
     }
 
    

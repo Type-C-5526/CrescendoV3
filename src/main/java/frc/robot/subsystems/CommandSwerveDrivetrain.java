@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.Field;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.DeployIntake;
+import frc.robot.commands.NearShot;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.Auto.NearShotBack;
 import frc.robot.generated.TunerConstants;
@@ -126,7 +127,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
 
-        m_PIDHeading = new PIDController(0.04, 0, 0.001);
+        m_PIDHeading = new PIDController(0.0756, 0, 0.0001);
         m_PIDHeading.setTolerance(1);
 
         isC1 = false;
@@ -151,6 +152,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         NamedCommands.registerCommand("autoAim", new AutoAim(() -> this.getState().Pose));
         NamedCommands.registerCommand("nearShotBack", new NearShotBack());
         NamedCommands.registerCommand("retractIntake", new RetractIntake());
+        NamedCommands.registerCommand("nearShot", new NearShot());
 
         AutoBuilder.configureHolonomic(
             ()->this.getState().Pose, // Supplier of current robot pose
@@ -408,7 +410,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
             }
 
-            if(m_PIDHeading.atSetpoint()){
+            boolean atSetpoint = Math.abs(m_PIDHeading.getPositionError()) < 2.5;
+
+
+            SmartDashboard.putBoolean("Is Chasis Aimed", atSetpoint);
+            SmartDashboard.putNumber("Aimed Chasis Setpoint::", m_PIDHeading.getSetpoint());
+            SmartDashboard.putNumber("Aimed Chasis Error", m_PIDHeading.getPositionError());
+
+            if(atSetpoint){
                 Superstructure.setChasisAimed(true);
             }else{
                 Superstructure.setChasisAimed(false);

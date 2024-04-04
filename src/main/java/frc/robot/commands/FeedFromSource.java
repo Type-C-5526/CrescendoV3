@@ -32,7 +32,7 @@ public class FeedFromSource extends Command {
 
    
 
-    m_conveyor.setMotorVelocity(1);
+    m_conveyor.setMotorVelocity(-1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -58,10 +58,14 @@ public class FeedFromSource extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(m_conveyor.hasGamePiece()){
-      Superstructure.setRobotStatus(RobotStatus.HAS_GAME_PIECE);
-      return true;
+
+    if(!Superstructure.isIgnoringColorSensor()){
+      if(m_conveyor.hasGamePiece()){
+        Superstructure.setRobotStatus(RobotStatus.HAS_GAME_PIECE);
+        return true;
+      }
     }
+    
 
     return false;
   }

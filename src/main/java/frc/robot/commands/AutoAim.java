@@ -285,18 +285,36 @@ public class AutoAim extends Command {
       m_Pivot.setSetpointInDegrees(pivotTargetAngle);
     }
 
-    if(m_Pivot.atSetpoint() && m_shooter.atSetpoint()){
-      Superstructure.setRobotStatus(RobotStatus.AIMED);
-      if(DriverStation.isAutonomous()){
-        ConveyorBelt.getInstance().setMotorVelocity(1);
-        shooted = true;
-        m_timer2.start();
-        
+    if (!DriverStation.isAutonomous()) {
+      if(m_Pivot.atSetpoint() && m_shooter.atSetpoint() && Superstructure.isChasisAimed()){
+        Superstructure.setRobotStatus(RobotStatus.AIMED);
+        if(DriverStation.isAutonomous()){
+          ConveyorBelt.getInstance().setMotorVelocity(1);
+          shooted = true;
+          m_timer2.start();
+          
+        }
+      }
+      else {
+        Superstructure.setRobotStatus(RobotStatus.AIMING);
+      }
+    }else{
+      if(m_Pivot.atSetpoint() && m_shooter.atSetpoint()){
+        Superstructure.setRobotStatus(RobotStatus.AIMED);
+        if(DriverStation.isAutonomous()){
+          ConveyorBelt.getInstance().setMotorVelocity(1);
+          shooted = true;
+          m_timer2.start();
+          
+        }
+      }
+      else {
+        Superstructure.setRobotStatus(RobotStatus.AIMING);
       }
     }
-    else {
-      Superstructure.setRobotStatus(RobotStatus.AIMING);
-    }
+
+    
+    
 
     
     //TurretSubsystem.getInstance().setSetpoint(TurretSubsystem.getAngleToTicks(turretSetpoint));

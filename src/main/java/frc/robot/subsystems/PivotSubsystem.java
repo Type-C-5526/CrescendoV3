@@ -83,7 +83,7 @@ public class PivotSubsystem extends SubsystemBase {
     
 
 
-    m_PID = new PIDController(9.5, 0, 0);
+    m_PID = new PIDController(8.5, 0, 0);
     m_PID.setTolerance(0.05);
     
 
@@ -205,7 +205,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double getPivotTargetAngle(double _distance){
-    return m_interpolation.interpolate(_distance);
+    return m_interpolation2.interpolate(_distance);
   }
 
   public boolean IsEnabled(){
@@ -239,12 +239,12 @@ public class PivotSubsystem extends SubsystemBase {
     m_points2.add(new Point(298.1, 29.970));
     m_points2.add(new Point(338.1, 26.191));
     m_points2.add(new Point(365.1, 25.521));
-    m_points2.add(new Point(390.1, 23.994));
-    m_points2.add(new Point(416.1, 22.939));
-    m_points2.add(new Point(439.1, 22.1));
-    m_points2.add(new Point(478.1, 20.214));
-    m_points2.add(new Point(520.1, 19.599));
-    m_points2.add(new Point(570.1, 19.863));
+    m_points2.add(new Point(390.1, 24.994));
+    m_points2.add(new Point(416.1, 23.939));
+    m_points2.add(new Point(439.1, 23.1));
+    m_points2.add(new Point(478.1, 21.214));
+    m_points2.add(new Point(520.1, 20.599));
+    m_points2.add(new Point(570.1, 20.863));
 
     m_points3.add(new Point(116.1,49.8));
     m_points3.add(new Point(164.1, 44.4));

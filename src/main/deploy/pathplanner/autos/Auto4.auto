@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8262467950017333,
+      "y": 4.535419005691432
+    },
+    "rotation": 121.51186070887285
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "nearShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeaveZone"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

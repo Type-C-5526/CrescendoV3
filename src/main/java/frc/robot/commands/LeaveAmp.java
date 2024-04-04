@@ -57,11 +57,10 @@ public class LeaveAmp extends Command {
     if(m_PivotSubsystem.atSetpoint()){ 
       m_Elevator.setSetpointAsPercent(90);
       m_Elevator.enableMotorPID();
-
-    if(m_Elevator.atSetpoint()){
       
-    Superstructure.setRobotStatus(RobotStatus.AIMED);
-    }
+      if(m_Elevator.atSetpoint()){
+        Superstructure.setRobotStatus(RobotStatus.AIMED);
+      }
   }
 
     

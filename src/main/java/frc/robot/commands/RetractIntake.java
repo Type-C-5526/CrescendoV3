@@ -35,7 +35,7 @@ public class RetractIntake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_pivot.setSetpointInDegrees(-15);
+    m_pivot.setSetpointInDegrees(-10);
     m_pivot.enablePID();
     m_shooter.disableMotorPID();
     m_intake.setSpeed(0);

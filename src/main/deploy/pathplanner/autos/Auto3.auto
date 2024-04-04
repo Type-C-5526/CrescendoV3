@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.9203081679778993,
+      "y": 4.708709197548688
+    },
+    "rotation": 123.83208376381818
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "nearShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SwipeNotes"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

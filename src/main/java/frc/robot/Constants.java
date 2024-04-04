@@ -20,7 +20,7 @@ public class Constants {
 
         public static final Translation2d CENTER = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2);
 
-        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.56 + Units.inchesToMeters(22.88));
+        public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00,5.56 + 0.45);
         public static final Translation2d RED_SPEAKER = new Translation2d(16.54,5.15);
     }
 
@@ -35,7 +35,7 @@ public class Constants {
 
         //public static final double MAGNET_OFFSET = -0.382080;
         //public static final double MAGNET_OFFSET = -0.762207;
-        public static final double MAGNET_OFFSET = -0.177343;
+        public static final double MAGNET_OFFSET = -0.347468;
 
         
 
@@ -53,11 +53,11 @@ public class Constants {
 
         public static final int NUMBER_OF_CAMERAS = 2;
 
-        public static final String CAMERA_A_NAME = "Arducam_OV9281_USB_Camera_A";
+        public static final String CAMERA_A_NAME = "Camera_Module_v1";
 
         public static final Transform3d CAMERA_A_LOCATION = new Transform3d(
-            new Translation3d(Units.inchesToMeters(14 - 2.75), Units.inchesToMeters(-15 + 4), Units.inchesToMeters(9)),
-            new Rotation3d(0.0, Math.toRadians(-30.0), Math.toRadians(180))
+            new Translation3d(0, Units.inchesToMeters(15), 0.187),
+            new Rotation3d(0.0, Math.toRadians(-30.0), 0)
         );
 
         public static final Rotation2d CAMERA_A_FOV = Rotation2d.fromDegrees(78.44);
@@ -99,7 +99,7 @@ public class Constants {
 
                 public static final TalonFXConfiguration shooterMotorConfig = new TalonFXConfiguration();
 
-                public static final PIDUtil pidConstants = new PIDUtil(6, 0, 0, .1, 0.1);
+                public static final PIDUtil pidConstants = new PIDUtil(6, 0, 0, .1, 0.5);
 
     }
 
@@ -116,7 +116,7 @@ public class Constants {
      public static final class Intake {
         public static final int INTAKE_MOTOR_ID = 24;
         public static final int RACK_MOTOR_ID = 17;
-         public static final PIDUtil TurretPIDConstants = new PIDUtil(0.6,0,0,1);
+         public static final PIDUtil TurretPIDConstants = new PIDUtil(0.45,0,0,1);
 
 
     }
